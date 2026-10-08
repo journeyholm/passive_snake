@@ -1076,6 +1076,42 @@ body[data-bg="paper"] .cksent{background:#fffdf7}
 body[data-bg="paper"] .flyword{background:#fffdf7}
 .build .w.landed{display:inline-block;animation:landpop .38s cubic-bezier(.2,1.6,.4,1)}
 @keyframes landpop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+/* ---------- shop ---------- */
+.fitroom{border:1px solid var(--edge,var(--line));border-radius:var(--r-sm,11px);overflow:hidden;
+  background:radial-gradient(120% 140% at 50% 0%,rgba(62,240,255,.10),transparent 60%),linear-gradient(180deg,#0b1430,#060a1a)}
+.fitroom canvas{display:block;width:100%;height:clamp(110px,22vw,160px)}
+body[data-bg="paper"] .fitroom{background:linear-gradient(180deg,#fffdf7,#f1ecdf)}
+.fitname{font-size:13px;color:var(--dim);margin:8px 0 10px;text-align:center}
+.fitname b{color:var(--text)}
+.shoptabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.shoptabs::-webkit-scrollbar{display:none}
+.shoptab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--sans);font-weight:700;font-size:14px;
+  padding:10px 14px;border-radius:var(--r-xs,8px);border:1px solid var(--edge,var(--line));background:rgba(255,255,255,.03);color:var(--dim);cursor:pointer}
+.shoptab span{font-size:18px}
+.shoptab.on{color:var(--text);border-color:var(--cyan);background:rgba(62,240,255,.12);box-shadow:var(--glow-cyan)}
+body[data-bg="paper"] .shoptab{background:#fffdf7}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.shopsub{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dimmer);margin:8px 0 0}
+.sitem{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:10px;padding:10px;border:1px solid var(--edge,var(--line));
+  border-radius:var(--r-sm,11px);background:rgba(9,14,34,.6);transition:border-color .15s,transform .15s}
+.sitem[data-try]{cursor:pointer}
+.sitem[data-try]:hover{border-color:var(--cyan);transform:translateY(-1px)}
+.sitem.owned{border-color:rgba(166,255,61,.35)}
+.sitem.worn{border-color:var(--lime);box-shadow:var(--glow-lime)}
+.sitem.trying{border-color:var(--cyan);box-shadow:var(--glow-cyan);background:rgba(62,240,255,.08)}
+.sitem.gated{opacity:.55}
+.sthumb{width:56px;height:44px;display:grid;place-items:center;border-radius:8px;background:rgba(0,0,0,.25);overflow:hidden}
+.sthumb span{font-size:26px;line-height:1}
+.sthumb canvas{width:56px!important;height:auto!important}
+.sinfo{min-width:0;display:flex;flex-direction:column;gap:2px}
+.sinfo b{font-size:14px;color:var(--text)}
+.sinfo span{font-size:12.5px;color:var(--dim);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sinfo em{font-style:normal;font-size:11.5px;color:var(--lime)}
+.sinfo .pips{margin-left:6px;color:var(--lime);font-size:11px;letter-spacing:.15em}
+.sbuy .btn{white-space:nowrap}
+body[data-bg="paper"] .sitem{background:#fffdf7}
+body[data-bg="paper"] .sthumb{background:rgba(0,0,0,.05)}
+@media (max-width:420px){ .shoptab{padding:9px 11px;font-size:13px} .sitem{grid-template-columns:48px 1fr auto;gap:8px} }
 /* ---------- grades ---------- */
 .gradechip{display:inline-flex;align-items:baseline;gap:4px;font-family:var(--mono);font-weight:900;font-size:15px;
   padding:2px 8px;border-radius:var(--r-xs,8px);border:1px solid currentColor;white-space:nowrap}
@@ -1382,8 +1418,7 @@ body.calm .bigstart{animation:none}
     <nav id="nav">
       <button class="btn sm" data-go="menu">Home</button>
       <button class="btn sm" data-go="codex">Codex</button>
-      <button class="btn sm" data-go="shop">Upgrades</button>
-      <button class="btn sm" data-go="lab">Snake&nbsp;Lab</button>
+      <button class="btn sm" data-go="shop">Shop</button>
       <button class="btn sm" data-go="desk">Desk</button>
       <button class="btn sm" data-go="story">Story</button>
       <button class="btn sm" data-go="contracts">Contracts</button>
@@ -1595,33 +1630,18 @@ body.calm .bigstart{animation:none}
 
   <!-- ============ SHOP ============ -->
   <section id="scr-shop" class="screen">
-    <div class="panel">
-      <div class="rowsplit" style="margin-bottom:6px">
-        <h2 style="margin:0">Upgrade Bay</h2>
+    <div class="panel shophead">
+      <div class="rowsplit" style="margin-bottom:8px">
+        <h2 style="margin:0">Shop</h2>
         <span class="wallet">&#9670; <b id="wallet-shop">0</b> BYTES</span>
       </div>
-      <p class="muted">Twelve pieces of equipment, all of them essentially bribes for a snake who would rather be asleep.
-      Earn BYTES by eating the right word at the right time. The good stuff stays locked until you have the editor rank for it.</p>
-      <div class="rankwrap" style="margin:12px 0 4px">
-        <div class="rankbadge" id="rank-ic2">&#9998;</div>
-        <div class="rankmeta">
-          <div class="rankname" id="rank-name2">Cub Reporter</div>
-          <div class="bar"><i id="rank-bar2" style="width:0%"></i></div>
-          <div class="ranknext" id="rank-next2">0 XP</div>
-        </div>
-      </div>
-      <hr>
-      <h3>Gear</h3>
-      <div class="shopgrid" id="shop-gear"></div>
-      <hr>
-      <h3>Snake Skins <span style="color:var(--dimmer);font-weight:400;text-transform:none;letter-spacing:0">— he will not thank you for these</span></h3>
-      <div class="shopgrid" id="shop-skins"></div>
-      <hr>
-      <h3>Trails <span style="color:var(--dimmer);font-weight:400;text-transform:none;letter-spacing:0">&mdash; decoration only, nothing here makes the game easier</span></h3>
-      <div class="shopgrid" id="shop-trails"></div>
-      <hr>
-      <h3>Noodle&rsquo;s Wardrobe <span style="color:var(--dimmer);font-weight:400;text-transform:none;letter-spacing:0">&mdash; he claims he is dressing for the job he wants</span></h3>
-      <div class="shopgrid" id="shop-hats"></div>
+      <div class="fitroom"><canvas id="shop-cv" aria-label="Noodle wearing the items you picked"></canvas></div>
+      <p class="fitname" id="fitname"></p>
+      <div class="shoptabs" id="shoptabs" role="tablist"></div>
+    </div>
+    <div class="panel">
+      <p class="muted tiny" id="shop-intro" style="margin-top:0"></p>
+      <div class="sgrid" id="shop-grid"></div>
     </div>
   </section>
 
@@ -3181,9 +3201,9 @@ const ACHIEVEMENTS = [
   { id:'sorter', ic:'📋', name:'Fast Hands', bytes:280,
     ds:'Sort 25 sentences in one Editor\u2019s Desk run.', has:(s)=> (s.sortBest||0) >= 25 },
   { id:'lab-rat', ic:'🧪', name:'Lab Work', bytes:220,
-    ds:'Buy your first Snake Lab upgrade.', has:(s)=> LAB.some(l => ((s.lab||{})[l.id]||0) > 0) },
+    ds:'Buy your first Noodle Training upgrade.', has:(s)=> LAB.some(l => ((s.lab||{})[l.id]||0) > 0) },
   { id:'evolved', ic:'🐍', name:'Fully Evolved', bytes:900,
-    ds:'Max out every Snake Lab stat.', has:(s)=> LAB.every(l => ((s.lab||{})[l.id]||0) >= l.max) },
+    ds:'Max out every Noodle Training stat.', has:(s)=> LAB.every(l => ((s.lab||{})[l.id]||0) >= l.max) },
   { id:'forged', ic:'✍', name:'Forged By Hand', bytes:240,
     ds:'Type five active sentences correctly from scratch.', has:(s)=> (s.stats.forgeCorrect||0) >= 5 },
   { id:'editor', ic:'📝', name:'Editor\u2019s Eye', bytes:260,
@@ -3292,20 +3312,35 @@ function celebrateTier(band){
    the scaffolding, the sentences or the scoring — so a student can spend freely
    without ever buying their way out of the thinking. */
 const TRAILS = [
-  { id:'none',   ic:'\u2205', name:'No Trail',       cost:0,   col:null,      ds:'Clean board. Nothing behind you.' },
-  { id:'ink',    ic:'\uD83D\uDD8B', name:'Ink Trail',     cost:300, col:'#8fa2ff', ds:'A wet line of newsroom ink.' },
-  { id:'mint',   ic:'\uD83C\uDF3F', name:'Mint Trail',    cost:400, col:'#6fd08c', ds:'Cool green, easy on the eyes.' },
-  { id:'ember',  ic:'\uD83D\uDD25', name:'Ember Trail',   cost:500, col:'#ffb454', ds:'Warm sparks in your wake.' },
-  { id:'violet', ic:'\uD83D\uDD2E', name:'Violet Trail',  cost:650, col:'#c58bff', ds:'Deadline-night purple.' },
-  { id:'press',  ic:'\uD83D\uDCF0', name:'Newsprint',     cost:850, col:'#d8d2c4', ds:'Grey flecks, like fresh newsprint.' }
+  { id:'none',    ic:'\u2205',       name:'No Trail',     cost:0,    col:null,      ds:'Clean board behind you.' },
+  { id:'ink',     ic:'\uD83D\uDD8B', name:'Ink Drops',    cost:300,  col:'#8fa2ff', shape:'dot', ds:'Wet newsroom ink.' },
+  { id:'mint',    ic:'\uD83C\uDF3F', name:'Mint',         cost:400,  col:'#6fd08c', shape:'dot', ds:'Cool green, easy on the eyes.' },
+  { id:'bubbles', ic:'\uD83E\uDEE7', name:'Bubbles',      cost:450,  col:'#7fd8ff', shape:'ring', rise:true, size:2, ds:'Floaty bubbles drift upward.' },
+  { id:'ember',   ic:'\uD83D\uDD25', name:'Embers',       cost:500,  col:'#ffb454', shape:'dot', rise:true, ds:'Warm sparks rise behind you.' },
+  { id:'sparkle', ic:'\u2728',       name:'Sparkles',     cost:600,  col:'#fff3b0', shape:'star', size:2.2, ds:'Twinkling stars in your wake.' },
+  { id:'violet',  ic:'\uD83D\uDD2E', name:'Violet Haze',  cost:650,  col:'#c58bff', shape:'dot', size:2.4, ds:'Deadline-night purple.' },
+  { id:'hearts',  ic:'\uD83D\uDC97', name:'Hearts',       cost:700,  col:'#ff7eb6', shape:'glyph', glyph:'\u2665', rise:true, size:2.4, count:1, ds:'Little hearts float away.' },
+  { id:'notes',   ic:'\uD83C\uDFB5', name:'Music Notes',  cost:750,  col:'#b9a2ff', shape:'glyph', glyph:'\u266A', rise:true, size:2.6, count:1, ds:'He hums while he works.' },
+  { id:'press',   ic:'\uD83D\uDCF0', name:'Newsprint',    cost:850,  col:'#d8d2c4', shape:'sq', ds:'Grey flecks, like fresh newsprint.' },
+  { id:'confetti',ic:'\uD83C\uDF89', name:'Confetti',     cost:1000, col:'rainbow', shape:'sq', size:2.4, count:3, ds:'Every move is a celebration.' },
+  { id:'comet',   ic:'\u2604\uFE0F', name:'Comet Tail',   cost:1300, col:'#ffffff', shape:'dot', size:2.6, count:4, life:0.45, spread:0.05, ds:'A blazing streak behind him.' }
 ];
 const HATS = [
-  { id:'none',   ic:'',       name:'Bare Head',        cost:0,   ds:'Noodle, unadorned.' },
-  { id:'press',  ic:'\uD83D\uDDDE', name:'Press Hat',       cost:250, ds:'A card in the band. Very old-school.' },
-  { id:'specs',  ic:'\uD83D\uDC53', name:'Reading Glasses', cost:350, ds:'For catching participles at distance.' },
-  { id:'cap',    ic:'\uD83E\uDDE2', name:'Editor\u2019s Cap',   cost:450, ds:'Worn backwards, obviously.' },
-  { id:'coffee', ic:'\u2615',   name:'Third Coffee',     cost:550, ds:'Noodle insists this counts as a hat.' },
-  { id:'crown',  ic:'\uD83D\uDC51', name:'Copy Crown',      cost:900, ds:'For whoever names the most agents.' }
+  { id:'none',      ic:'',             name:'Bare Head',      cost:0,    ds:'Noodle, unadorned.' },
+  { id:'cap',       ic:'\uD83E\uDDE2', name:'Ball Cap',       cost:200,  ds:'Worn backwards, obviously.' },
+  { id:'press',     ic:'\uD83D\uDDDE', name:'Press Hat',      cost:250,  ds:'A card in the band. Very old-school.' },
+  { id:'specs',     ic:'\uD83D\uDC53', name:'Reading Glasses',cost:300,  slot:'eyes', ds:'For catching participles at distance.' },
+  { id:'shades',    ic:'\uD83D\uDD76\uFE0F', name:'Cool Shades', cost:400, slot:'eyes', ds:'Too cool for passive voice.' },
+  { id:'bow',       ic:'\uD83C\uDF80', name:'Big Bow',        cost:400,  ds:'Fancy.' },
+  { id:'flower',    ic:'\uD83C\uDF38', name:'Flower Crown',   cost:450,  ds:'He picked it himself. Actively.' },
+  { id:'headphones',ic:'\uD83C\uDFA7', name:'Headphones',     cost:500,  ds:'Lo-fi grammar beats to study to.' },
+  { id:'coffee',    ic:'\u2615',       name:'Third Coffee',   cost:550,  ds:'Noodle insists this counts as a hat.' },
+  { id:'top',       ic:'\uD83C\uDFA9', name:'Top Hat',        cost:650,  ds:'Distinguished. Possibly a magician.' },
+  { id:'grad',      ic:'\uD83C\uDF93', name:'Graduation Cap', cost:750,  ds:'Earned, not "was awarded."' },
+  { id:'propeller', draw:'propeller',  name:'Propeller Beanie', cost:850, ds:'It spins while he moves.' },
+  { id:'crown',     ic:'\uD83D\uDC51', name:'Copy Crown',     cost:900,  ds:'For whoever names the most agents.' },
+  { id:'wizard',    draw:'wizard',     name:'Wizard Hat',     cost:1100, ds:'Turns passive into active. Magic.' },
+  { id:'halo',      draw:'halo',       name:'Golden Halo',    cost:1400, ds:'A glowing ring. Angelic grammar.' }
 ];
 function ownedList(key){ return (save[key] && save[key].length) ? save[key] : [key === 'trails' ? 'none' : 'none']; }
 function wornHat(){
@@ -3397,7 +3432,15 @@ const SKINS = [
   { id:'ghost',  name:'Ghost Data',   cost:760,  rank:4, pat:'ghost',   head:'#e2e9ff', tail:'#3b4470', eye:'#04060f' },
   { id:'ink',    name:'Red Ink',      cost:900,  rank:5, pat:'solid',   head:'#ff4f63', tail:'#5c0f1c', eye:'#1a0006' },
   { id:'gold',   name:'Gold Standard',cost:1400, rank:6, pat:'glow',    head:'#ffe08a', tail:'#8a6410', eye:'#1a1200' },
-  { id:'spectrum',name:'Full Spectrum',cost:2000,rank:7, pat:'rainbow', head:'#ffffff', tail:'#888888', eye:'#000000' }
+  { id:'spectrum',name:'Full Spectrum',cost:2000,rank:7, pat:'rainbow', head:'#ffffff', tail:'#888888', eye:'#000000' },
+  { id:'candy',  name:'Candy Cane',   cost:450,  rank:1, pat:'candy',   head:'#ff4f63', tail:'#ff4f63', alt:'#ffffff', eye:'#1a0006' },
+  { id:'tiger',  name:'Tiger',        cost:550,  rank:1, pat:'tiger',   head:'#ffb347', tail:'#c2410c', eye:'#1a0a00' },
+  { id:'aurora', name:'Aurora',       cost:700,  rank:2, pat:'flow',    head:'#3ef0ff', tail:'#b46bff', eye:'#04060f' },
+  { id:'scales', name:'Dragon Scale', cost:800,  rank:3, pat:'scales',  head:'#3ddc84', tail:'#0f5132', eye:'#04140a' },
+  { id:'lava',   name:'Lava Lamp',    cost:950,  rank:3, pat:'flow',    head:'#ffcb3d', tail:'#ff2d55', eye:'#1a0500' },
+  { id:'chrome', name:'Chrome',       cost:1200, rank:4, pat:'chrome',  head:'#f2f6ff', tail:'#6b7790', eye:'#04060f' },
+  { id:'storm',  name:'Storm Cell',   cost:1500, rank:5, pat:'electric',head:'#9fe2ff', tail:'#1d3fbf', eye:'#020818' },
+  { id:'galaxy', name:'Galaxy',       cost:1800, rank:6, pat:'galaxy',  head:'#7b6bff', tail:'#140b3d', eye:'#ffffff' }
 ];
 
 /* ============================================================
@@ -3420,6 +3463,7 @@ const DEFAULT_SAVE = {
   mastery: {},
   pressShown: {},
   trails: ['none'], trail: 'none',
+  auras: ['none'], aura: 'none', powers: [],
   hats: ['none'],   hat: 'none',
   skin: 'viper',
   skins: ['viper'],
@@ -4158,10 +4202,14 @@ function pelletAt(x, y){
    They never reveal an answer — they only change tempo, points or safety, so
    chasing one is a real decision without shortcutting the grammar. */
 const POWERUPS = [
-  { id:'slow',  ic:'⏳', name:'Slow-Mo',      col:[62,240,255],  ds:'Grid slows 40% for 8 seconds' },
-  { id:'x2',    ic:'✦', name:'Double Points', col:[255,203,61],  ds:'Double score for 10 seconds' },
-  { id:'shield',ic:'🛡', name:'Spare Shield',  col:[155,107,255], ds:'Absorbs one wrong word' },
-  { id:'bytes', ic:'◆', name:'Byte Cache',    col:[166,255,61],  ds:'A pocket of BYTES' }
+  { id:'slow',   ic:'\u23F3',       name:'Slow-Mo',       col:[62,240,255],  ds:'The grid slows 40% for 8 seconds' },
+  { id:'x2',     ic:'\u2728',       name:'Double Points', col:[255,203,61],  ds:'Double score for 10 seconds' },
+  { id:'shield', ic:'\uD83D\uDEE1', name:'Spare Shield',  col:[155,107,255], ds:'Absorbs one wrong word' },
+  { id:'bytes',  ic:'\uD83D\uDCB0', name:'Byte Cache',    col:[166,255,61],  ds:'A pocket of BYTES' },
+  { id:'rocket', ic:'\uD83D\uDE80', name:'Momentum Rocket', col:[255,140,60], cost:300, ds:'Momentum jumps straight to the max' },
+  { id:'ghost',  ic:'\uD83D\uDC7B', name:'Ghost Mode',    col:[200,210,255], cost:450, rank:1, ds:'Pass through your own tail for 8 seconds' },
+  { id:'gems',   ic:'\uD83D\uDC8E', name:'Gem Rain',      col:[127,216,255], cost:550, rank:1, ds:'Six gems drop on the board. Grab them for BYTES' },
+  { id:'lantern',ic:'\uD83D\uDD26', name:'Fog Lantern',   col:[255,226,122], cost:400, rank:2, only:'fog', ds:'Blows the boss fog all the way back' }
 ];
 function powerById(id){ for (let i = 0; i < POWERUPS.length; i++) if (POWERUPS[i].id === id) return POWERUPS[i]; return POWERUPS[0]; }
 function freeCell(){
@@ -4177,40 +4225,6 @@ function freeCell(){
   }
   return null;
 }
-function spawnPower(){
-  if (G.power) return;
-  const c = freeCell();
-  if (!c) return;
-  const kind = pick(POWERUPS);
-  G.power = { x:c.x, y:c.y, id:kind.id, born:performance.now(), life:11000 };
-}
-function collectPower(){
-  const P0 = G.power;
-  if (!P0) return;
-  const def = powerById(P0.id);
-  const px = P0.x * CELL + CELL / 2, py = P0.y * CELL + CELL / 2;
-  G.power = null;
-  SFX.buy();
-  burst(px, py, rgb(def.col), 24);
-  ripple(px, py, rgb(def.col));
-  if (P0.id === 'slow'){
-    G.slowUntil = performance.now() + 8000;
-    floatText(px, py, 'SLOW-MO', rgb(def.col));
-  } else if (P0.id === 'x2'){
-    G.x2Until = performance.now() + 10000;
-    floatText(px, py, 'DOUBLE POINTS', rgb(def.col));
-  } else if (P0.id === 'shield'){
-    G.shields++;
-    updateShieldHUD();
-    floatText(px, py, '+SHIELD', rgb(def.col));
-  } else {
-    const amt = 30 + rnd(40);
-    G.bytes += Math.round(amt * bytesMult());
-    floatText(px, py, '+' + amt + ' BYTES', rgb(def.col));
-  }
-  updateHUD();
-  showTip('good', def.name, def.ds + '. <span style="color:var(--dim)">Power-ups never tell you an answer — they only change the tempo.</span>');
-}
 
 /* ---------- effects ---------- */
 function burst(px, py, color, n){
@@ -4223,20 +4237,6 @@ function burst(px, py, color, n){
 function floatText(px, py, text, color){ G.floats.push({ x:px, y:py, text:text, color:color, life:1 }); }
 /* a purchased trail: a couple of slow motes dropped behind the tail. Purely
    decorative, and it never sits on top of a pellet the student needs to read. */
-function trailPuff(){
-  const col = trailColor();
-  if (!col || !G.snake.length) return;
-  const tail = G.snake[G.snake.length - 1];
-  const sc = CELL / 24;
-  for (let i = 0; i < 2; i++){
-    G.particles.push({
-      x: tail.x * CELL + CELL / 2 + (Math.random() - 0.5) * CELL * 0.4,
-      y: tail.y * CELL + CELL / 2 + (Math.random() - 0.5) * CELL * 0.4,
-      vx: (Math.random() - 0.5) * 0.25 * sc, vy: (Math.random() - 0.5) * 0.25 * sc,
-      life: 0.55, color: col, r: (0.8 + Math.random() * 1.4) * sc
-    });
-  }
-}
 function ripple(px, py, color){ G.ripples.push({ x:px, y:py, color:color, life:1 }); }
 function inFog(cx){ return cx < G.fogL || cx >= COLS - G.fogR; }
 function pelletHidden(p){
@@ -4293,7 +4293,8 @@ function step(){
   }
 
   const limit = G.grow > 0 ? G.snake.length : G.snake.length - 1;
-  for (let i = 0; i < limit; i++){
+  const ghosting = performance.now() < (G.ghostUntil || 0);   // Ghost Mode: slip through your own tail
+  for (let i = 0; i < limit && !ghosting; i++){
     if (G.snake[i].x === hx && G.snake[i].y === hy){
       if (G.freeBites > 0){
         G.freeBites--;
@@ -4311,7 +4312,7 @@ function step(){
   if (G.trace.length < 1500) G.trace.push({ x:hx, y:hy, e:0 });
   G.prevPos = G.snake.map(sg => ({ x:sg.x, y:sg.y }));   // where each segment glides from
   G.snake.unshift({ x:hx, y:hy, role: G.grow > 0 ? G.growRole : null, word:null });
-  if (!save.settings.calm) trailPuff();   // calm mode keeps the board still
+  if (!save.settings.calm){ trailPuff(); auraPuff(); }   // calm mode keeps the board still
   if (G.grow > 0 && G.snake.length < snakeCap()){
     G.grow--; if (G.grow === 0) G.growRole = null;
   } else {
@@ -4322,6 +4323,7 @@ function step(){
   if (G.snake.length > (G.maxLen || 0)) G.maxLen = G.snake.length;
 
   if (G.power && G.power.x === hx && G.power.y === hy) collectPower();
+  collectGem(hx, hy);
   const p = pelletAt(hx, hy);
   // a long word spans several cells: crossing the rest of a word we were just
   // penalised for must not charge the penalty again on every cell
@@ -4452,7 +4454,7 @@ function loop(t){
 
   for (let i = G.particles.length - 1; i >= 0; i--){
     const p = G.particles[i];
-    p.x += p.vx; p.y += p.vy; p.vy += .06; p.vx *= .985; p.life -= .022;
+    p.x += p.vx; p.y += p.vy; p.vy += p.float ? -.01 : .06; p.vx *= .985; p.life -= .022; if (p.spin != null) p.spin += .08;
     if (p.life <= 0) G.particles.splice(i, 1);
   }
   for (let i = G.floats.length - 1; i >= 0; i--){
@@ -4558,16 +4560,13 @@ function render(t){
     ctx.restore();
   });
 
+  drawGems(t);
   drawPower(t);
   drawPellets(t);
   drawSnake(t);
   drawFx(t);
 
-  G.particles.forEach(p => {
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x - p.r / 2, p.y - p.r / 2, p.r, p.r);
-  });
+  G.particles.forEach(p => drawParticle(ctx, p));
   ctx.globalAlpha = 1;
 
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -4582,6 +4581,7 @@ function render(t){
   ctx.globalAlpha = 1;
 
   if (G.xform) drawTransform(G._dt || 16);
+  drawActivePowers();
 
   if (G.flash > 0){
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -5089,34 +5089,6 @@ function drawPellets(t){
   });
 }
 
-function drawPower(t){
-  const P0 = G.power;
-  if (!P0) return;
-  const def = powerById(P0.id);
-  const age = performance.now() - P0.born;
-  const fade = age > P0.life - 2500 ? (0.35 + 0.65 * Math.abs(Math.sin(age / 130))) : 1;
-  const cxp = P0.x * CELL + CELL / 2, cyp = P0.y * CELL + CELL / 2;
-  const pulse = 0.5 + 0.5 * Math.sin(t / 260);
-  const col = rgb(def.col);
-  ctx.save();
-  ctx.globalAlpha = fade;
-  ctx.strokeStyle = rgba(def.col, 0.35 + pulse * 0.4);
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(cxp, cyp, CELL * (0.55 + pulse * 0.22), 0, Math.PI * 2); ctx.stroke();
-  ctx.shadowColor = col; ctx.shadowBlur = CELL * 0.7;
-  ctx.fillStyle = rgba(def.col, 0.18);
-  rr(ctx, cxp - CELL * 0.36, cyp - CELL * 0.36, CELL * 0.72, CELL * 0.72, CELL * 0.16);
-  ctx.fill();
-  ctx.strokeStyle = col; ctx.lineWidth = 1.8;
-  rr(ctx, cxp - CELL * 0.36, cyp - CELL * 0.36, CELL * 0.72, CELL * 0.72, CELL * 0.16);
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = '700 ' + Math.max(9, Math.round(CELL * 0.46)) + 'px ' + MONO;
-  ctx.fillStyle = col;
-  ctx.fillText(def.ic, cxp, cyp + CELL * 0.03);
-  ctx.restore();
-}
 
 /* ---------- motion preferences ---------- */
 const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -5154,154 +5126,246 @@ function snakeDrawPos(){
   }
   return out;
 }
-function segColor(i, n, t, sk, stunned){
-  const s = G.snake[i];
+function segColor(i, n, t, sk, stunned, role, word){
   const f = n > 1 ? i / (n - 1) : 0;
   if (stunned && Math.floor(t / 90) % 2 === 0) return '#ff4f63';
-  if (i === 0) return (s.role && s.word) ? rgb(ROLE_COLOR[s.role]) : sk.head;
-  if (s.role) return rgb(lerpArr(ROLE_COLOR[s.role], BOARD_INK ? [120,110,90] : [20, 26, 52], f * .45));
-  if (sk.pat === 'rainbow') return 'hsl(' + Math.round((i * 14 + t / 22) % 360) + ',92%,62%)';
+  if (i === 0 && role && word) return rgb(ROLE_COLOR[role]);
+  if (i === 0 && sk.pat !== 'rainbow' && sk.pat !== 'flow') return sk.head;
+  if (role) return rgb(lerpArr(ROLE_COLOR[role], BOARD_INK ? [120,110,90] : [20, 26, 52], f * .45));
+  switch (sk.pat){
+    case 'rainbow': return 'hsl(' + Math.round((i * 14 + t / 22) % 360) + ',92%,62%)';
+    case 'flow':    return mixHex(sk.head, sk.tail, 0.5 + 0.5 * Math.sin(i * 0.55 - t / 260));
+    case 'candy':   return i % 2 ? (sk.alt || '#ffffff') : sk.head;
+    case 'chrome':  return mixHex(sk.head, sk.tail, 0.35 + 0.35 * Math.sin(i * 0.35 + t / 420) + f * .3);
+  }
   let col = mixHex(sk.head, sk.tail, f);
   if (sk.pat === 'stripe' && i % 2 === 1) col = rgb(lerpArr(hexToArr(col), [4, 6, 15], .38));
   return col;
+}
+function skinById(id){ for (let i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) return SKINS[i]; return SKINS[0]; }
+
+/* Paints Noodle anywhere: the game board, or the shop's fitting room.
+   P: segment centres (head first). o: { C cell size, sk skin, cols, ang head
+   direction, t, drowsy, stunned, evo, hat, aura, ghost, ink } */
+function paintNoodle(c, P, o){
+  const n = P.length;
+  if (!n) return;
+  const C = o.C, sk = o.sk, t = o.t, cols = o.cols;
+  const rad = i => C * (i === 0 ? 0.44 : 0.40 - 0.15 * (n > 1 ? i / (n - 1) : 0));
+  const near = (a, b) => Math.abs(a.x - b.x) <= C * 1.2 && Math.abs(a.y - b.y) <= C * 1.2;
+  const motion = motionOK();
+  c.save();
+  if (sk.pat === 'ghost') c.globalAlpha = 0.74;
+  if (o.ghost) c.globalAlpha = 0.45 + 0.15 * Math.sin(t / 90);
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  const hp = P[0];
+
+  // 0. aura: a soft halo hugging the whole body
+  const au = o.aura && o.aura.id !== 'none' ? o.aura : null;
+  if (au){
+    const a0 = c.globalAlpha;
+    [[1.05, .10], [0.55, .2]].forEach(pass => {
+      for (let i = n - 1; i >= 0; i--){
+        const col = auraColor(au, i, t, sk);
+        const flick = au.id === 'fire' ? 0.75 + 0.25 * Math.sin(t / 55 + i * 1.3) : 0.85 + 0.15 * Math.sin(t / 420);
+        c.globalAlpha = a0 * pass[1] * flick * (o.ink ? 1.6 : 1);
+        c.strokeStyle = col; c.fillStyle = col;
+        const w = rad(i) * 2 + C * pass[0];
+        if (i > 0 && near(P[i], P[i - 1])){
+          c.lineWidth = w;
+          c.beginPath(); c.moveTo(P[i].x, P[i].y); c.lineTo(P[i - 1].x, P[i - 1].y); c.stroke();
+        } else { c.beginPath(); c.arc(P[i].x, P[i].y, w / 2, 0, Math.PI * 2); c.fill(); }
+      }
+    });
+    c.globalAlpha = a0;
+  }
+  // 1. soft glow under the head
+  if (!o.ink){
+    const g = c.createRadialGradient(hp.x, hp.y, 0, hp.x, hp.y, C * 1.6);
+    g.addColorStop(0, rgba(hexToArr(cols[0]), .28)); g.addColorStop(1, rgba(hexToArr(cols[0]), 0));
+    c.fillStyle = g; c.fillRect(hp.x - C * 1.6, hp.y - C * 1.6, C * 3.2, C * 3.2);
+  }
+  // 2. outline
+  c.strokeStyle = o.ink ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.45)';
+  for (let i = n - 1; i >= 1; i--){
+    if (!near(P[i], P[i - 1])) continue;
+    c.lineWidth = rad(i) * 2 + 3;
+    c.beginPath(); c.moveTo(P[i].x, P[i].y); c.lineTo(P[i - 1].x, P[i - 1].y); c.stroke();
+  }
+  // 3. body tube
+  const glow = sk.pat === 'glow';
+  if (glow){ c.shadowColor = sk.head; c.shadowBlur = C * 0.5; }
+  for (let i = n - 1; i >= 1; i--){
+    c.strokeStyle = cols[i]; c.fillStyle = cols[i];
+    if (near(P[i], P[i - 1])){
+      c.lineWidth = rad(i) * 2;
+      c.beginPath(); c.moveTo(P[i].x, P[i].y); c.lineTo(P[i - 1].x, P[i - 1].y); c.stroke();
+    } else { c.beginPath(); c.arc(P[i].x, P[i].y, rad(i), 0, Math.PI * 2); c.fill(); }
+  }
+  c.shadowBlur = 0;
+  // 4. highlight along the back (chrome gets a mirror shine)
+  const shine = sk.pat === 'chrome' ? .5 : o.ink ? .35 : .16;
+  c.strokeStyle = 'rgba(255,255,255,' + shine + ')';
+  for (let i = n - 1; i >= 1; i--){
+    if (!near(P[i], P[i - 1])) continue;
+    c.lineWidth = Math.max(1, rad(i) * (sk.pat === 'chrome' ? .32 : .55));
+    c.beginPath();
+    c.moveTo(P[i].x - rad(i) * 0.22, P[i].y - rad(i) * 0.3);
+    c.lineTo(P[i - 1].x - rad(i) * 0.22, P[i - 1].y - rad(i) * 0.3);
+    c.stroke();
+  }
+  // 5. skin patterns
+  for (let i = 1; i < n; i++){
+    if (o.roles && o.roles[i]) continue;          // a word segment keeps its role colour clean
+    const p = P[i], r = rad(i);
+    let dx = 1, dy = 0;
+    if (near(p, P[i - 1])){ dx = P[i - 1].x - p.x; dy = P[i - 1].y - p.y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d; }
+    if (sk.pat === 'dots' && i % 2 === 0){
+      c.fillStyle = 'rgba(4,6,15,.5)';
+      c.beginPath(); c.arc(p.x, p.y, Math.max(1, C * 0.1), 0, Math.PI * 2); c.fill();
+    } else if (sk.pat === 'tiger' && i % 3 === 0){
+      c.strokeStyle = 'rgba(25,10,0,.7)'; c.lineWidth = Math.max(1.5, r * 0.38);
+      c.beginPath(); c.moveTo(p.x - dy * r * .9, p.y + dx * r * .9); c.lineTo(p.x + dy * r * .9, p.y - dx * r * .9); c.stroke();
+    } else if (sk.pat === 'scales'){
+      c.strokeStyle = 'rgba(0,30,10,.55)'; c.lineWidth = Math.max(1, r * 0.16);
+      c.beginPath();
+      c.moveTo(p.x - dy * r * .6 - dx * r * .3, p.y + dx * r * .6 - dy * r * .3);
+      c.lineTo(p.x + dx * r * .25, p.y + dy * r * .25);
+      c.lineTo(p.x + dy * r * .6 - dx * r * .3, p.y - dx * r * .6 - dy * r * .3);
+      c.stroke();
+    } else if (sk.pat === 'galaxy'){
+      for (let k = 0; k < 2; k++){
+        const sx = p.x + (((i * 37 + k * 53) % 9) / 9 - .5) * r * 1.3, sy = p.y + (((i * 61 + k * 29) % 9) / 9 - .5) * r * 1.3;
+        c.globalAlpha = (sk.pat === 'ghost' ? .74 : 1) * (0.35 + 0.65 * Math.abs(Math.sin(t / 380 + i * 1.7 + k)));
+        c.fillStyle = k ? '#c9b8ff' : '#ffffff';
+        c.beginPath(); c.arc(sx, sy, Math.max(0.8, r * 0.13), 0, Math.PI * 2); c.fill();
+      }
+      c.globalAlpha = 1;
+    } else if (sk.pat === 'electric' && motion && Math.random() < 0.12){
+      c.strokeStyle = '#d6f6ff'; c.lineWidth = Math.max(1, C * 0.05);
+      c.shadowColor = '#7fd8ff'; c.shadowBlur = C * 0.4;
+      c.beginPath(); c.moveTo(p.x, p.y);
+      let x = p.x, y = p.y;
+      for (let k = 0; k < 3; k++){ x += (Math.random() - .5) * C * .7; y += (Math.random() - .5) * C * .7; c.lineTo(x, y); }
+      c.stroke(); c.shadowBlur = 0;
+    }
+    // evolution: dorsal spines
+    if (o.evo >= 2 && i % 2 === 0 && i < n - 1 && near(p, P[i - 1])){
+      const sp = C * 0.16, bx = p.x - dy * r, by = p.y + dx * r;
+      c.fillStyle = cols[i]; c.globalAlpha = 0.8;
+      c.beginPath();
+      c.moveTo(bx - dx * sp, by - dy * sp); c.lineTo(bx - dy * sp * 1.4, by + dx * sp * 1.4); c.lineTo(bx + dx * sp, by + dy * sp);
+      c.closePath(); c.fill(); c.globalAlpha = 1;
+    }
+  }
+
+  // 6. head
+  const hr = rad(0);
+  c.save();
+  c.translate(hp.x, hp.y); c.rotate(o.ang);
+  c.fillStyle = 'rgba(0,0,0,.45)';
+  c.beginPath(); c.ellipse(0, 0, hr * 1.18 + 1.5, hr * 1.02 + 1.5, 0, 0, Math.PI * 2); c.fill();
+  const hg = c.createRadialGradient(-hr * .3, -hr * .35, hr * .1, 0, 0, hr * 1.3);
+  hg.addColorStop(0, rgb(lerpArr(hexToArr(cols[0]), [255, 255, 255], .35)));
+  hg.addColorStop(1, cols[0]);
+  c.fillStyle = hg;
+  c.shadowColor = cols[0]; c.shadowBlur = o.ink ? 0 : C * 0.5 * (glow ? 1.6 : 1);
+  c.beginPath(); c.ellipse(0, 0, hr * 1.18, hr * 1.02, 0, 0, Math.PI * 2); c.fill();
+  c.shadowBlur = 0;
+  if (sk.pat === 'galaxy'){ c.fillStyle = '#fff'; c.globalAlpha = .7; c.beginPath(); c.arc(-hr * .5, hr * .3, hr * .1, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1; }
+  if (motion && (o.drowsy || 0) < 0.3 && !o.stunned && (t % 2300) < 230){
+    const L = hr * (1.1 + 0.5 * Math.sin((t % 2300) / 230 * Math.PI));
+    c.strokeStyle = '#ff4f8b'; c.lineWidth = Math.max(1, C * 0.06);
+    c.beginPath(); c.moveTo(hr * 1.05, 0); c.lineTo(hr * 1.05 + L * .6, 0);
+    c.lineTo(hr * 1.05 + L, -hr * .22); c.moveTo(hr * 1.05 + L * .6, 0); c.lineTo(hr * 1.05 + L, hr * .22); c.stroke();
+  }
+  const ex = hr * 0.42, ey = hr * 0.5, er = Math.max(1.6, hr * 0.36);
+  const blink = (t % 3700) < 130;
+  [-1, 1].forEach(side => {
+    const cx = ex, cy = ey * side;
+    if ((o.drowsy || 0) > 0.5 || blink){
+      c.strokeStyle = sk.eye; c.lineWidth = Math.max(1, C * 0.07);
+      c.beginPath(); c.arc(cx, cy, er * .8, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+    } else {
+      c.fillStyle = '#ffffff';
+      c.beginPath(); c.arc(cx, cy, er, 0, Math.PI * 2); c.fill();
+      c.fillStyle = o.stunned ? '#ff4f63' : sk.eye;
+      c.beginPath(); c.arc(cx + er * 0.35, cy, er * 0.55, 0, Math.PI * 2); c.fill();
+      c.fillStyle = 'rgba(255,255,255,.85)';
+      c.beginPath(); c.arc(cx + er * 0.15, cy - er * 0.25, er * 0.18, 0, Math.PI * 2); c.fill();
+    }
+  });
+  c.restore();
+
+  if (o.evo >= 1){
+    const pl = 0.5 + 0.5 * Math.sin(t / 340);
+    c.strokeStyle = cols[0]; c.globalAlpha = 0.16 + pl * 0.2; c.lineWidth = Math.max(1, C * 0.07);
+    c.beginPath(); c.arc(hp.x, hp.y, C * (0.72 + pl * 0.14), 0, Math.PI * 2); c.stroke();
+    if (o.evo >= 4){ c.globalAlpha = 0.1 + pl * 0.12; c.beginPath(); c.arc(hp.x, hp.y, C * (1.05 + pl * 0.2), 0, Math.PI * 2); c.stroke(); }
+    c.globalAlpha = 1;
+  }
+  if (o.hat) drawHat(c, o.hat, hp.x, hp.y, C, t);
+  c.restore();
+}
+function auraColor(au, i, t, sk){
+  switch (au.id){
+    case 'neon':    return sk.head;
+    case 'fire':    return 'hsl(' + Math.round(18 + 18 * Math.sin(t / 120 + i * .6)) + ',100%,55%)';
+    case 'frost':   return '#9fe8ff';
+    case 'shadow':  return '#6a3fd0';
+    case 'prism':   return 'hsl(' + Math.round((i * 20 + t / 8) % 360) + ',95%,62%)';
+    case 'gold':    return 'hsl(45,100%,' + Math.round(58 + 10 * Math.sin(t / 200 + i * .4)) + '%)';
+    case 'toxic':   return '#9dff3d';
+  }
+  return au.col || sk.head;
+}
+/* Hats: emoji sit upright on his head; the fancy ones are drawn by hand. */
+function drawHat(c, hat, x, y, C, t){
+  c.save();
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  if (hat.draw === 'halo'){
+    const yy = y - C * 0.82 + Math.sin(t / 400) * C * 0.05;
+    c.strokeStyle = '#ffe27a'; c.lineWidth = Math.max(2, C * 0.12);
+    c.shadowColor = '#ffd34d'; c.shadowBlur = C * 0.6;
+    c.beginPath(); c.ellipse(x, yy, C * 0.42, C * 0.14, 0, 0, Math.PI * 2); c.stroke();
+  } else if (hat.draw === 'wizard'){
+    const b = y - C * 0.38;
+    c.fillStyle = '#5b3fd6';
+    c.beginPath(); c.moveTo(x - C * 0.36, b); c.quadraticCurveTo(x - C * 0.05, b - C * 0.55, x + C * 0.18, b - C * 1.05);
+    c.quadraticCurveTo(x + C * 0.08, b - C * 0.5, x + C * 0.36, b); c.closePath(); c.fill();
+    c.fillStyle = '#3a2696'; c.beginPath(); c.ellipse(x, b, C * 0.55, C * 0.12, 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#ffe27a'; c.font = Math.round(C * 0.32) + 'px ' + MONO; c.fillText('★', x - C * 0.02, b - C * 0.38);
+  } else if (hat.draw === 'propeller'){
+    const b = y - C * 0.36;
+    ['#ff4f63', '#ffcb3d', '#3ef0ff', '#a6ff3d'].forEach((col, k) => {
+      c.fillStyle = col;
+      c.beginPath(); c.moveTo(x, b); c.arc(x, b, C * 0.34, Math.PI + k * Math.PI / 4, Math.PI + (k + 1) * Math.PI / 4); c.closePath(); c.fill();
+    });
+    c.strokeStyle = '#333'; c.lineWidth = Math.max(1, C * 0.05);
+    c.beginPath(); c.moveTo(x, b - C * 0.32); c.lineTo(x, b - C * 0.5); c.stroke();
+    const spin = motionOK() ? Math.cos(t / 40) : 1;
+    c.fillStyle = '#e2e9ff';
+    c.beginPath(); c.ellipse(x, b - C * 0.52, Math.abs(spin) * C * 0.42 + 1, C * 0.07, 0, 0, Math.PI * 2); c.fill();
+  } else if (hat.ic){
+    const eyes = hat.slot === 'eyes';
+    c.font = Math.round(C * (eyes ? 0.82 : 0.8)) + 'px ' + MONO;
+    c.fillText(hat.ic, x, eyes ? y : y - C * 0.62);
+  }
+  c.restore();
 }
 function drawSnake(t){
   const n = G.snake.length;
   if (!n) return;
   const sk = skinColors();
   const stunned = G.stun > 0;
-  const evo = evoStage();
   const P = snakeDrawPos();
-  const rad = i => CELL * (i === 0 ? 0.44 : 0.40 - 0.15 * (n > 1 ? i / (n - 1) : 0));
-  const near = (a, b) => Math.abs(a.x - b.x) <= CELL * 1.2 && Math.abs(a.y - b.y) <= CELL * 1.2;
-  const cols = G.snake.map((_, i) => segColor(i, n, t, sk, stunned));
-
-  ctx.save();
-  if (sk.pat === 'ghost') ctx.globalAlpha = 0.74;
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-
-  // 1. soft glow under the head
-  const hp = P[0];
-  if (!BOARD_INK){
-    const g = ctx.createRadialGradient(hp.x, hp.y, 0, hp.x, hp.y, CELL * 1.6);
-    g.addColorStop(0, rgba(hexToArr(cols[0]), .28)); g.addColorStop(1, rgba(hexToArr(cols[0]), 0));
-    ctx.fillStyle = g; ctx.fillRect(hp.x - CELL * 1.6, hp.y - CELL * 1.6, CELL * 3.2, CELL * 3.2);
-  }
-  // 2. outline pass gives the body a clean edge on any background
-  ctx.strokeStyle = BOARD_INK ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.45)';
-  for (let i = n - 1; i >= 1; i--){
-    if (!near(P[i], P[i - 1])) continue;
-    ctx.lineWidth = rad(i) * 2 + 3;
-    ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[i - 1].x, P[i - 1].y); ctx.stroke();
-  }
-  // 3. the body: one continuous tube that tapers to the tail
-  const glow = sk.pat === 'glow';
-  if (glow){ ctx.shadowColor = sk.head; ctx.shadowBlur = CELL * 0.5; }
-  for (let i = n - 1; i >= 1; i--){
-    ctx.strokeStyle = cols[i];
-    ctx.fillStyle = cols[i];
-    if (near(P[i], P[i - 1])){
-      ctx.lineWidth = rad(i) * 2;
-      ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[i - 1].x, P[i - 1].y); ctx.stroke();
-    } else {
-      ctx.beginPath(); ctx.arc(P[i].x, P[i].y, rad(i), 0, Math.PI * 2); ctx.fill();
-    }
-  }
-  ctx.shadowBlur = 0;
-  // 4. a highlight along the back makes it read as round, not flat
-  ctx.strokeStyle = BOARD_INK ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.16)';
-  for (let i = n - 1; i >= 1; i--){
-    if (!near(P[i], P[i - 1])) continue;
-    ctx.lineWidth = Math.max(1, rad(i) * 0.55);
-    ctx.beginPath();
-    ctx.moveTo(P[i].x - rad(i) * 0.22, P[i].y - rad(i) * 0.3);
-    ctx.lineTo(P[i - 1].x - rad(i) * 0.22, P[i - 1].y - rad(i) * 0.3);
-    ctx.stroke();
-  }
-  // patterns and evolution details
-  for (let i = 1; i < n; i++){
-    const s = G.snake[i];
-    if (sk.pat === 'dots' && !s.role && i % 2 === 0){
-      ctx.fillStyle = 'rgba(4,6,15,.5)';
-      ctx.beginPath(); ctx.arc(P[i].x, P[i].y, Math.max(1, CELL * 0.1), 0, Math.PI * 2); ctx.fill();
-    }
-    if (evo >= 2 && i % 2 === 0 && i < n - 1 && near(P[i], P[i - 1])){
-      let dx = P[i - 1].x - P[i].x, dy = P[i - 1].y - P[i].y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
-      const r = rad(i), sp = CELL * 0.16;
-      const bx = P[i].x - dy * r, by = P[i].y + dx * r;
-      ctx.fillStyle = cols[i]; ctx.globalAlpha = 0.8;
-      ctx.beginPath();
-      ctx.moveTo(bx - dx * sp, by - dy * sp);
-      ctx.lineTo(bx - dy * sp * 1.4, by + dx * sp * 1.4);
-      ctx.lineTo(bx + dx * sp, by + dy * sp);
-      ctx.closePath(); ctx.fill();
-      ctx.globalAlpha = sk.pat === 'ghost' ? 0.74 : 1;
-    }
-  }
-
-  // 5. the head: an oval pointed where he is going, with eyes that follow
-  const ang = Math.atan2(G.dir.y, G.dir.x);
-  const hr = rad(0);
-  ctx.save();
-  ctx.translate(hp.x, hp.y); ctx.rotate(ang);
-  ctx.fillStyle = 'rgba(0,0,0,.45)';
-  ctx.beginPath(); ctx.ellipse(0, 0, hr * 1.18 + 1.5, hr * 1.02 + 1.5, 0, 0, Math.PI * 2); ctx.fill();
-  const hg = ctx.createRadialGradient(-hr * .3, -hr * .35, hr * .1, 0, 0, hr * 1.3);
-  hg.addColorStop(0, rgb(lerpArr(hexToArr(cols[0]), [255, 255, 255], .35)));
-  hg.addColorStop(1, cols[0]);
-  ctx.fillStyle = hg;
-  ctx.shadowColor = cols[0]; ctx.shadowBlur = BOARD_INK ? 0 : CELL * 0.5 * (glow ? 1.6 : 1);
-  ctx.beginPath(); ctx.ellipse(0, 0, hr * 1.18, hr * 1.02, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.shadowBlur = 0;
-
-  // tongue: a quick flick every couple of seconds while he is awake
-  const tongueOn = motionOK() && G.drowsy < 0.3 && !stunned && (t % 2300) < 230;
-  if (tongueOn){
-    const L = hr * (1.1 + 0.5 * Math.sin((t % 2300) / 230 * Math.PI));
-    ctx.strokeStyle = '#ff4f8b'; ctx.lineWidth = Math.max(1, CELL * 0.06); ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(hr * 1.05, 0); ctx.lineTo(hr * 1.05 + L * .6, 0);
-    ctx.lineTo(hr * 1.05 + L, -hr * .22); ctx.moveTo(hr * 1.05 + L * .6, 0); ctx.lineTo(hr * 1.05 + L, hr * .22); ctx.stroke();
-  }
-  // eyes
-  const ex = hr * 0.42, ey = hr * 0.5, er = Math.max(1.6, hr * 0.34);
-  const blink = (t % 3700) < 130;
-  [-1, 1].forEach(side => {
-    const cx = ex, cy = ey * side;
-    if (G.drowsy > 0.5 || blink){
-      ctx.strokeStyle = sk.eye; ctx.lineWidth = Math.max(1, CELL * 0.07);
-      ctx.beginPath(); ctx.arc(cx, cy, er * .8, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
-    } else {
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath(); ctx.arc(cx, cy, er, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = stunned ? '#ff4f63' : (sk.eye === '#000000' ? '#000' : sk.eye);
-      ctx.beginPath(); ctx.arc(cx + er * 0.35, cy, er * 0.55, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,.85)';
-      ctx.beginPath(); ctx.arc(cx + er * 0.15, cy - er * 0.25, er * 0.18, 0, Math.PI * 2); ctx.fill();
-    }
+  const cols = G.snake.map((s, i) => segColor(i, n, t, sk, stunned, s.role, s.word));
+  paintNoodle(ctx, P, {
+    C:CELL, sk:sk, cols:cols, roles:G.snake.map(s => s.role), ang:Math.atan2(G.dir.y, G.dir.x), t:t,
+    drowsy:G.drowsy, stunned:stunned, evo:evoStage(), hat:wornHat(), aura:wornAura(),
+    ghost: performance.now() < (G.ghostUntil || 0), ink:!!BOARD_INK
   });
-  ctx.restore();
-
-  // evolution: head aura
-  if (evo >= 1){
-    const pl = 0.5 + 0.5 * Math.sin(t / 340);
-    ctx.strokeStyle = cols[0];
-    ctx.globalAlpha = 0.16 + pl * 0.2;
-    ctx.lineWidth = Math.max(1, CELL * 0.07);
-    ctx.beginPath(); ctx.arc(hp.x, hp.y, CELL * (0.72 + pl * 0.14), 0, Math.PI * 2); ctx.stroke();
-    if (evo >= 4){
-      ctx.globalAlpha = 0.1 + pl * 0.12;
-      ctx.beginPath(); ctx.arc(hp.x, hp.y, CELL * (1.05 + pl * 0.2), 0, Math.PI * 2); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
-  // the hat he bought is finally on his head
-  const hat = wornHat();
-  if (hat){
-    ctx.font = Math.round(CELL * 0.78) + 'px ' + MONO;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(hat.ic, hp.x, hp.y - CELL * 0.62);
-  }
-  ctx.restore();
+  const hp = P[0];
 
   // Noodle, asleep on the job
   if (G.drowsy > 0.05){
@@ -5355,6 +5419,7 @@ function drawSnake(t){
     ctx.restore();
   }
 }
+
 function hexToArr(c){
   if (c && c.charAt(0) === '#') return [parseInt(c.substr(1, 2), 16), parseInt(c.substr(3, 2), 16), parseInt(c.substr(5, 2), 16)];
   const m = String(c).match(/\d+/g);
@@ -5517,7 +5582,7 @@ function addXP(n){
   const after = rankIndex(save.xp);
   if (after > before){
     SFX.rankup();
-    toast('rank', 'Rank Up', RANKS[after].name, 'New gear may be available in the Upgrade Bay.');
+    toast('rank', 'Rank Up', RANKS[after].name, 'New items may be unlocked in the Shop.');
   }
   renderRank();
 }
@@ -6677,6 +6742,7 @@ function startRun(mode, idx){
   G.stepMs = Math.round(level.speed * paceMult() * (1 + (save.upgrades.slowmo || 0) * 0.09));
   G.acc = 0; G.stun = 0;
   G.particles = []; G.floats = []; G.ripples = []; G.surge = 0; G.fx = []; G.confetti = []; G.happyUntil = 0;
+  G.ghostUntil = 0; G.gems = []; G.gemsUntil = 0;
   G.limit = mode === 'sort' ? 60
           : (save.settings.timer && mode === 'campaign') ? levelTimeLimit(level) : 0;
   G.sorted = 0;
@@ -7452,6 +7518,7 @@ function abandonRun(){
   renderWallets();
 }
 function show(name){
+  if (name === 'lab'){ name = 'shop'; SHOP_TAB = 'gear'; }   // Snake Lab now lives in the Shop
   if (name !== 'play') abandonRun();
   $$('.screen').forEach(s => s.classList.remove('active'));
   const el = $('#scr-' + name);
@@ -7463,7 +7530,7 @@ function show(name){
     // fire the tier front page once the debrief is out of the way, not on top of it
     if (G.tierJustCleared){ const band = G.tierJustCleared; G.tierJustCleared = 0; setTimeout(() => celebrateTier(band), 420); }
   }
-  if (name === 'shop'){ renderShop(); renderWallets(); renderRank(); }
+  if (name === 'shop'){ SHOP_TRY = {}; renderShop(); renderWallets(); }
   if (name === 'lab'){ renderLab(); renderRank(); }
   if (name === 'contracts'){ renderContracts(); }
   if (name === 'desk'){ renderDesk(); }
@@ -7628,126 +7695,7 @@ function renderLevelGrid(){
 }
 
 /* ---------- shop ---------- */
-function renderShop(){
-  const rk = rankIndex(save.xp || 0);
-  $('#shop-gear').innerHTML = GEAR.map(it => {
-    const lvl = save.upgrades[it.id] || 0;
-    const maxed = lvl >= it.max;
-    const cost = maxed ? 0 : it.cost[lvl];
-    const gated = rk < it.rank;
-    const afford = save.bytes >= cost && !gated;
-    return '<div class="item' + (lvl > 0 ? ' owned' : '') + (gated ? ' gated' : '') + '">' +
-      '<div class="ic">' + it.ic + '</div>' +
-      '<div class="nm">' + esc(it.name) + '</div>' +
-      '<div class="ds">' + esc(it.ds) + '</div>' +
-      (it.max > 1 ? '<div class="lv">LEVEL ' + lvl + ' / ' + it.max + '</div>' : (lvl ? '<div class="lv">INSTALLED</div>' : '')) +
-      (gated ? '<div class="req">Requires rank: ' + RANKS[it.rank].name + '</div>' : '') +
-      (maxed ? '<button class="btn sm lime" disabled>Maxed</button>'
-        : gated ? '<button class="btn sm" disabled>&#128274; Locked</button>'
-        : '<button class="btn sm' + (afford ? ' primary' : '') + '" data-buy="' + it.id + '"' + (afford ? '' : ' disabled') + '>&#9670; ' + cost + '</button>') +
-    '</div>';
-  }).join('');
 
-  $('#shop-skins').innerHTML = SKINS.map(sk => {
-    const owned = save.skins.indexOf(sk.id) >= 0;
-    const equipped = save.skin === sk.id;
-    const gated = rk < sk.rank && !owned;
-    const afford = save.bytes >= sk.cost && !gated;
-    return '<div class="item' + (equipped ? ' equipped' : owned ? ' owned' : '') + (gated ? ' gated' : '') + '">' +
-      '<div class="ic">' + skinPreview(sk) + '</div>' +
-      '<div class="nm">' + esc(sk.name) + '</div>' +
-      '<div class="ds">' + esc(PATTERN_DESC[sk.pat] || 'Solid body.') + '</div>' +
-      '<div><span class="tag">' + esc(sk.pat) + '</span></div>' +
-      (gated ? '<div class="req">Requires rank: ' + RANKS[sk.rank].name + '</div>' : '') +
-      (equipped ? '<button class="btn sm lime" disabled>Equipped</button>'
-        : owned ? '<button class="btn sm" data-skin="' + sk.id + '">Equip</button>'
-        : gated ? '<button class="btn sm" disabled>&#128274; Locked</button>'
-        : '<button class="btn sm' + (afford ? ' primary' : '') + '" data-buyskin="' + sk.id + '"' + (afford ? '' : ' disabled') + '>&#9670; ' + sk.cost + '</button>') +
-    '</div>';
-  }).join('');
-
-  const cosmetic = (list, ownKey, wearKey, box, buyAttr, wearAttr) => {
-    $(box).innerHTML = list.map(it => {
-      const owned = it.cost === 0 || (save[ownKey] || []).indexOf(it.id) >= 0;
-      const worn = (save[wearKey] || 'none') === it.id;
-      const afford = save.bytes >= it.cost;
-      return '<div class="item' + (owned ? ' owned' : '') + '">' +
-        '<div class="ic">' + (it.ic || '\u2205') + '</div>' +
-        '<div class="nm">' + esc(it.name) + '</div>' +
-        '<div class="ds">' + esc(it.ds) + '</div>' +
-        (worn ? '<div class="lv">EQUIPPED</div>' : '') +
-        (worn ? '<button class="btn sm lime" disabled>Worn</button>'
-          : owned ? '<button class="btn sm" ' + wearAttr + '="' + it.id + '">Equip</button>'
-          : '<button class="btn sm' + (afford ? ' primary' : '') + '" ' + buyAttr + '="' + it.id + '"' +
-            (afford ? '' : ' disabled') + '>&#9670; ' + it.cost + '</button>') +
-      '</div>';
-    }).join('');
-  };
-  cosmetic(TRAILS, 'trails', 'trail', '#shop-trails', 'data-buytrail', 'data-trail');
-  cosmetic(HATS,   'hats',   'hat',   '#shop-hats',   'data-buyhat',   'data-hat');
-
-  const buyCosmetic = (attr, list, ownKey, wearKey) => {
-    $$('[' + attr + ']').forEach(b => b.onclick = () => {
-      const it = list.filter(x => x.id === b.getAttribute(attr))[0];
-      if (!it || save.bytes < it.cost){ SFX.deny(); return; }
-      save.bytes -= it.cost;
-      save[ownKey] = save[ownKey] || [];
-      if (save[ownKey].indexOf(it.id) < 0) save[ownKey].push(it.id);
-      save[wearKey] = it.id;
-      persist(); SFX.buy(); renderShop(); renderWallets(); updateHustleHUD();
-    });
-  };
-  buyCosmetic('data-buytrail', TRAILS, 'trails', 'trail');
-  buyCosmetic('data-buyhat',   HATS,   'hats',   'hat');
-  $$('[data-trail]').forEach(b => b.onclick = () => {
-    save.trail = b.getAttribute('data-trail'); persist(); SFX.click(); renderShop();
-  });
-  $$('[data-hat]').forEach(b => b.onclick = () => {
-    save.hat = b.getAttribute('data-hat'); persist(); SFX.click(); renderShop(); updateHustleHUD();
-  });
-
-  $$('[data-buy]').forEach(b => b.onclick = () => {
-    const it = GEAR.filter(g => g.id === b.dataset.buy)[0];
-    const lvl = save.upgrades[it.id] || 0;
-    const cost = it.cost[lvl];
-    if (save.bytes < cost || lvl >= it.max || rankIndex(save.xp||0) < it.rank){ SFX.deny(); return; }
-    save.bytes -= cost; save.upgrades[it.id] = lvl + 1;
-    persist(); SFX.buy(); checkBadges(); renderShop(); renderWallets();
-  });
-  $$('[data-buyskin]').forEach(b => b.onclick = () => {
-    const sk = SKINS.filter(s => s.id === b.dataset.buyskin)[0];
-    if (save.bytes < sk.cost || rankIndex(save.xp||0) < sk.rank){ SFX.deny(); return; }
-    save.bytes -= sk.cost; save.skins.push(sk.id); save.skin = sk.id;
-    persist(); SFX.buy(); renderShop(); renderWallets();
-  });
-  $$('[data-skin]').forEach(b => b.onclick = () => {
-    save.skin = b.dataset.skin; persist(); SFX.click(); renderShop();
-  });
-}
-
-const PATTERN_DESC = {
-  solid:'Clean solid body — the classic look.',
-  stripe:'Alternating banded segments.',
-  dots:'Punched-out dot down the middle of every segment.',
-  glow:'Heavy bloom. Noodle lights up the whole grid.',
-  ghost:'Semi-transparent body. You can see the grid straight through him.',
-  rainbow:'Every segment a different hue, cycling as he moves.'
-};
-function skinPreview(sk){
-  let out = '<span class="skinprev">';
-  for (let i = 0; i < 5; i++){
-    const f = i / 4;
-    let c;
-    if (sk.pat === 'rainbow') c = 'hsl(' + (i * 52) + ',92%,62%)';
-    else c = mixHex(sk.head, sk.tail, f);
-    if (sk.pat === 'stripe' && i % 2 === 1) c = mixHex(sk.head, '#04060f', .5);
-    const extra = sk.pat === 'glow' ? ';box-shadow:0 0 9px ' + sk.head
-      : sk.pat === 'ghost' ? ';opacity:.6' : (i === 0 ? ';box-shadow:0 0 7px ' + sk.head : '');
-    const dot = sk.pat === 'dots' && i > 0 ? ';background-image:radial-gradient(circle,rgba(4,6,15,.75) 34%,transparent 36%)' : '';
-    out += '<i class="' + (i === 0 ? 'head' : '') + '" style="background:' + c + extra + dot + '"></i>';
-  }
-  return out + '</span>';
-}
 
 /* ---------- teacher's own sentences ----------
    A pair is "Passive | Active". The verb index drives the role colouring, so we
@@ -7826,15 +7774,13 @@ const REVEALS = [
   { id:'codex', nav:'codex', when:() => Object.keys(save.codex).length > 0,
     label:'Grammar Codex', note:'Every rule the game tests, saved for you to reread.' },
   { id:'shop', nav:'shop', when:() => save.bytes >= 150,
-    label:'Upgrade Bay', note:'You can afford your first piece of gear.' },
+    label:'Shop', note:'Skins, hats, glows and power-ups. Tap anything to try it on.' },
   { id:'trophies', nav:'trophies', when:() => Object.keys(save.badges).length > 0,
     label:'Trophy Case', note:'You have earned your first badge.' },
   { id:'story', nav:'story', when:() => Object.keys(save.story).length > 0,
     label:'The Noodle Papers', note:'Chapter one is waiting.' },
   { id:'contracts', nav:'contracts', when:() => missionsDone() >= 3,
     label:'Contract Board', note:'Four objectives a day, and they pay well.' },
-  { id:'lab', nav:'lab', when:() => rankIndex(save.xp || 0) >= 1,
-    label:'Snake Lab', note:'Permanent upgrades to Noodle himself.' },
   { id:'desk', nav:'desk', when:() => save.bytes >= 200 && missionsDone() >= 3,
     label:'Noodle&rsquo;s Desk', note:'He has a desk. It is empty. Fix that.' }
 ];
@@ -9685,6 +9631,460 @@ function printSnapshot(){
       .map(v => '<td ' + td + '>' + v + '</td>').join('') + '</tr>').join('') +
     '</tbody></table><div class="pfoot">Passive Snake · Created by Luke Holm</div>';
   setTimeout(() => window.print(), 60);
+}
+
+/* ============================================================
+   SHOP — one screen, six tabs, and a fitting room
+   Everything cosmetic is decoration only: no skin, glow, hat or trail
+   changes the speed, the sentences or the scoring. Power-ups change the
+   tempo of a round and never point at an answer.
+   ============================================================ */
+const PATTERN_DESC = {
+  solid:'Clean, classic body.',
+  stripe:'Bold banded stripes.',
+  dots:'Polka dots down his back.',
+  glow:'Heavy bloom. He lights up the board.',
+  ghost:'See-through. The grid shows through him.',
+  rainbow:'Every segment a different hue, always cycling.',
+  flow:'Color waves ripple down his body.',
+  galaxy:'Deep space with twinkling stars.',
+  tiger:'Fierce dark stripes.',
+  chrome:'Mirror-polished metal with a moving shine.',
+  candy:'Red and white, like a candy cane.',
+  electric:'Crackles with live lightning.',
+  scales:'Overlapping dragon scales.'
+};
+const AURAS = [
+  { id:'none',   ic:'∅',       name:'No Glow',       cost:0,    ds:'Just Noodle.' },
+  { id:'neon',   ic:'💡', name:'Neon Halo',     cost:250,  ds:'A soft glow in his own color.' },
+  { id:'frost',  ic:'❄️', name:'Frost',         cost:400,  ds:'Icy blue shimmer with sparkles.' },
+  { id:'toxic',  ic:'☢️', name:'Toxic',         cost:500,  ds:'Radioactive green. Do not lick.' },
+  { id:'fire',   ic:'🔥', name:'Fire Aura',     cost:700,  ds:'Flickering flames and rising embers.' },
+  { id:'shadow', ic:'🌑', name:'Shadow',        cost:800,  ds:'Purple smoke curls off his body.' },
+  { id:'gold',   ic:'✨',       name:'Golden',        cost:1100, ds:'Shimmering gold with glitter.' },
+  { id:'prism',  ic:'🌈', name:'Prism',         cost:1500, ds:'Every color of light, always moving.' }
+];
+function wornAura(){
+  const id = save.aura || 'none';
+  for (let i = 0; i < AURAS.length; i++) if (AURAS[i].id === id) return id === 'none' ? null : AURAS[i];
+  return null;
+}
+/* trails: what falls behind his tail */
+function trailDef(id){
+  id = id || save.trail || 'none';
+  for (let i = 0; i < TRAILS.length; i++) if (TRAILS[i].id === id) return id === 'none' ? null : TRAILS[i];
+  return null;
+}
+
+/* ---------- particle shapes for trails and auras ---------- */
+function puff(list, x, y, d, sc){
+  const glyph = d.glyph;
+  list.push({
+    x:x + (Math.random() - 0.5) * CELL * 0.5, y:y + (Math.random() - 0.5) * CELL * 0.5,
+    vx:(Math.random() - 0.5) * (d.spread || 0.3) * sc, vy:(d.rise ? -(0.3 + Math.random() * 0.5) : (Math.random() - 0.5) * 0.3) * sc,
+    life:d.life || 0.7, color:d.col === 'rainbow' ? 'hsl(' + rnd(360) + ',95%,62%)' : d.col,
+    r:(d.size || 1.6) * (0.7 + Math.random() * 0.8) * sc, shape:d.shape || 'sq', glyph:glyph, float:!!d.rise, spin:Math.random() * 6
+  });
+}
+function trailPuff(){
+  const d = trailDef();
+  if (!d || !G.snake.length) return;
+  const tail = G.snake[G.snake.length - 1];
+  const sc = CELL / 24;
+  const n = d.count || 2;
+  for (let i = 0; i < n; i++) puff(G.particles, tail.x * CELL + CELL / 2, tail.y * CELL + CELL / 2, d, sc);
+}
+const AURA_FX = {
+  fire:  { col:'#ffb454', shape:'dot', rise:true, life:0.8, size:1.4 },
+  frost: { col:'#e6f9ff', shape:'star', life:0.7, size:2.2 },
+  gold:  { col:'#ffe27a', shape:'star', life:0.7, size:2.2 },
+  shadow:{ col:'rgba(106,63,208,.6)', shape:'dot', rise:true, life:0.9, size:3 },
+  toxic: { col:'#9dff3d', shape:'ring', rise:true, life:0.8, size:2 }
+};
+function auraPuff(){
+  const au = wornAura();
+  if (!au || !AURA_FX[au.id] || !G.snake.length || Math.random() < 0.35) return;
+  const s = G.snake[rnd(G.snake.length)];
+  puff(G.particles, s.x * CELL + CELL / 2, s.y * CELL + CELL / 2, AURA_FX[au.id], CELL / 24);
+}
+function drawParticle(c, p){
+  c.globalAlpha = Math.max(0, Math.min(1, p.life));
+  c.fillStyle = p.color; c.strokeStyle = p.color;
+  if (p.shape === 'dot'){ c.beginPath(); c.arc(p.x, p.y, p.r, 0, Math.PI * 2); c.fill(); }
+  else if (p.shape === 'ring'){ c.lineWidth = Math.max(1, p.r * .4); c.beginPath(); c.arc(p.x, p.y, p.r * 1.3, 0, Math.PI * 2); c.stroke(); }
+  else if (p.shape === 'star'){
+    const r = p.r * 1.6;
+    c.beginPath();
+    for (let k = 0; k < 8; k++){ const a = k * Math.PI / 4 + p.spin, rr2 = k % 2 ? r * .3 : r; c.lineTo(p.x + Math.cos(a) * rr2, p.y + Math.sin(a) * rr2); }
+    c.closePath(); c.fill();
+  } else if (p.shape === 'glyph'){
+    c.font = '700 ' + Math.max(8, Math.round(p.r * 5)) + 'px ' + MONO;
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(p.glyph, p.x, p.y);
+  } else c.fillRect(p.x - p.r / 2, p.y - p.r / 2, p.r, p.r);
+}
+
+/* ---------- board power-ups ---------- */
+function powerAvailable(def){
+  if (def.only === 'fog' && !(G.level && G.level.fog)) return false;
+  return !def.cost || (save.powers || []).indexOf(def.id) >= 0;
+}
+function spawnPower(){
+  if (G.power) return;
+  const c = freeCell();
+  if (!c) return;
+  const pool = POWERUPS.filter(powerAvailable);
+  if (!pool.length) return;
+  const kind = pick(pool);
+  G.power = { x:c.x, y:c.y, id:kind.id, born:performance.now(), life:11000 };
+}
+function collectPower(){
+  const P0 = G.power;
+  if (!P0) return;
+  const def = powerById(P0.id);
+  const px = P0.x * CELL + CELL / 2, py = P0.y * CELL + CELL / 2;
+  const now = performance.now();
+  G.power = null;
+  SFX.buy();
+  burst(px, py, rgb(def.col), 24);
+  ripple(px, py, rgb(def.col));
+  confettiBurst(px, py, 16);
+  if (P0.id === 'slow'){ G.slowUntil = now + 8000; floatText(px, py, 'SLOW-MO', rgb(def.col)); }
+  else if (P0.id === 'x2'){ G.x2Until = now + 10000; floatText(px, py, 'DOUBLE POINTS', rgb(def.col)); }
+  else if (P0.id === 'shield'){ G.shields++; updateShieldHUD(); floatText(px, py, '+SHIELD', rgb(def.col)); }
+  else if (P0.id === 'ghost'){ G.ghostUntil = now + 8000; floatText(px, py, 'GHOST MODE', rgb(def.col)); }
+  else if (P0.id === 'rocket'){ G.hustle = 1; updateHustleHUD(); floatText(px, py, 'FULL MOMENTUM', rgb(def.col)); }
+  else if (P0.id === 'lantern'){ G.fogL = 0; G.fogR = 0; floatText(px, py, 'FOG CLEARED', rgb(def.col)); }
+  else if (P0.id === 'gems'){
+    G.gems = [];
+    for (let k = 0; k < 6; k++){ const cc = freeCell(); if (cc) G.gems.push({ x:cc.x, y:cc.y, born:now + k * 60 }); }
+    G.gemsUntil = now + 7000;
+    floatText(px, py, 'GEM RAIN', rgb(def.col));
+  } else {
+    const amt = 30 + rnd(40);
+    G.bytes += Math.round(amt * bytesMult());
+    floatText(px, py, '+' + amt + ' BYTES', rgb(def.col));
+  }
+  updateHUD();
+  showTip('good', def.ic + ' ' + def.name, def.ds + '. <span style="color:var(--dim)">Power-ups never tell you an answer — they only change the tempo.</span>');
+}
+function collectGem(x, y){
+  if (!G.gems || !G.gems.length) return;
+  for (let i = G.gems.length - 1; i >= 0; i--){
+    const g = G.gems[i];
+    if (g.x !== x || g.y !== y) continue;
+    G.gems.splice(i, 1);
+    const amt = Math.round(12 * bytesMult());
+    G.bytes += amt;
+    const px = x * CELL + CELL / 2, py = y * CELL + CELL / 2;
+    burst(px, py, '#7fd8ff', 12);
+    floatText(px, py, '+' + amt, '#7fd8ff');
+    SFX.click();
+    updateHUD();
+  }
+}
+function drawGems(t){
+  if (!G.gems || !G.gems.length) return;
+  const now = performance.now();
+  if (now > (G.gemsUntil || 0)){ G.gems = []; return; }
+  const left = G.gemsUntil - now;
+  G.gems.forEach((g, k) => {
+    if (now < g.born) return;
+    const x = g.x * CELL + CELL / 2, y = g.y * CELL + CELL / 2 + Math.sin(t / 250 + k) * CELL * 0.06;
+    const s = CELL * 0.3 * Math.min(1, (now - g.born) / 200);
+    ctx.save();
+    ctx.globalAlpha = left < 1500 ? 0.4 + 0.6 * Math.abs(Math.sin(now / 110)) : 1;
+    ctx.shadowColor = '#7fd8ff'; ctx.shadowBlur = CELL * 0.5;
+    ctx.fillStyle = '#bfefff';
+    ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s * .8, y); ctx.lineTo(x, y + s); ctx.lineTo(x - s * .8, y); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,.8)';
+    ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s * .4, y - s * .1); ctx.lineTo(x - s * .2, y - s * .1); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  });
+}
+/* the pickup on the board: a spinning badge with a countdown ring */
+function drawPower(t){
+  const P0 = G.power;
+  if (!P0) return;
+  const def = powerById(P0.id);
+  const age = performance.now() - P0.born;
+  const left = Math.max(0, 1 - age / P0.life);
+  const fade = age > P0.life - 2500 ? (0.35 + 0.65 * Math.abs(Math.sin(age / 130))) : 1;
+  const cxp = P0.x * CELL + CELL / 2, cyp = P0.y * CELL + CELL / 2 + (motionOK() ? Math.sin(t / 300) * CELL * 0.08 : 0);
+  const pulse = 0.5 + 0.5 * Math.sin(t / 260);
+  const col = rgb(def.col);
+  const R = CELL * 0.48;
+  ctx.save();
+  ctx.globalAlpha = fade;
+  // beacon
+  ctx.strokeStyle = rgba(def.col, 0.25 + pulse * 0.3); ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cxp, cyp, R * (1.25 + pulse * 0.35), 0, Math.PI * 2); ctx.stroke();
+  // countdown ring
+  ctx.strokeStyle = col; ctx.lineWidth = Math.max(2, CELL * 0.09); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(cxp, cyp, R * 1.08, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * left); ctx.stroke();
+  // spinning hexagon badge
+  ctx.translate(cxp, cyp);
+  ctx.rotate(motionOK() ? t / 1600 : 0);
+  ctx.shadowColor = col; ctx.shadowBlur = CELL * 0.7;
+  ctx.fillStyle = BOARD_INK ? '#fffdf7' : 'rgba(8,13,30,.95)';
+  ctx.beginPath(); for (let k = 0; k < 6; k++){ const a = k * Math.PI / 3; ctx.lineTo(Math.cos(a) * R * .9, Math.sin(a) * R * .9); } ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = rgba(def.col, 0.25); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 1.8; ctx.stroke();
+  ctx.rotate(motionOK() ? -t / 1600 : 0);
+  // orbiting sparkles
+  if (motionOK()) for (let k = 0; k < 3; k++){
+    const a = t / 500 + k * Math.PI * 2 / 3;
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(Math.cos(a) * R * 1.4, Math.sin(a) * R * 1.4, Math.max(1, CELL * 0.06), 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = Math.max(10, Math.round(CELL * 0.55)) + 'px ' + MONO;
+  ctx.fillText(def.ic, 0, CELL * 0.03);
+  ctx.restore();
+}
+/* active timed power-ups, shown as little timers in the board's corner */
+function drawActivePowers(){
+  const now = performance.now();
+  const act = [];
+  if (now < G.slowUntil) act.push(['slow', G.slowUntil, 8000]);
+  if (now < G.x2Until) act.push(['x2', G.x2Until, 10000]);
+  if (now < (G.ghostUntil || 0)) act.push(['ghost', G.ghostUntil, 8000]);
+  if (G.gems && G.gems.length && now < (G.gemsUntil || 0)) act.push(['gems', G.gemsUntil, 7000]);
+  if (!act.length) return;
+  const h = Math.max(20, CELL * 0.9), w = h * 2.6;
+  ctx.save();
+  act.forEach((a, k) => {
+    const def = powerById(a[0]);
+    const x = 6, y = 6 + k * (h + 5);
+    const f = Math.max(0, (a[1] - now) / a[2]);
+    ctx.fillStyle = BOARD_INK ? 'rgba(255,253,247,.95)' : 'rgba(6,10,24,.88)';
+    rr(ctx, x, y, w, h, h / 2); ctx.fill();
+    ctx.fillStyle = rgba(def.col, .35);
+    rr(ctx, x, y, w * f, h, h / 2); ctx.fill();
+    ctx.strokeStyle = rgb(def.col); ctx.lineWidth = 1.4;
+    rr(ctx, x, y, w, h, h / 2); ctx.stroke();
+    ctx.font = Math.round(h * 0.58) + 'px ' + MONO;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(def.ic, x + h / 2, y + h / 2 + 1);
+    ctx.fillStyle = BOARD_INK ? '#1c1a16' : '#ffffff';
+    ctx.font = '800 ' + Math.round(h * 0.42) + 'px ' + MONO;
+    ctx.fillText(Math.ceil((a[1] - now) / 1000) + 's', x + w - h * 0.75, y + h / 2 + 1);
+  });
+  ctx.restore();
+}
+
+/* ---------- the shop screen ---------- */
+let SHOP_TAB = 'skins';
+let SHOP_TRY = {};            // previewed but not bought: { skin, aura, hat, trail }
+const SHOP_TABS = [
+  { id:'power',  ic:'⚡',       name:'Power-Ups' },
+  { id:'gear',   ic:'🛠', name:'Upgrades' },
+  { id:'skins',  ic:'🐍', name:'Skins' },
+  { id:'auras',  ic:'✨',       name:'Glow' },
+  { id:'hats',   ic:'🎩', name:'Hats' },
+  { id:'trails', ic:'💫', name:'Trails' }
+];
+function shopLook(){
+  return {
+    sk: skinById(SHOP_TRY.skin || save.skin),
+    aura: (() => { const id = SHOP_TRY.aura || save.aura || 'none'; const a = AURAS.filter(x => x.id === id)[0]; return a && a.id !== 'none' ? a : null; })(),
+    hat: (() => { const id = SHOP_TRY.hat || save.hat || 'none'; const h = HATS.filter(x => x.id === id)[0]; return h && h.id !== 'none' ? h : null; })(),
+    trail: trailDef(SHOP_TRY.trail || save.trail)
+  };
+}
+/* a little Noodle swimming across the fitting room */
+let shopRaf = 0, shopParts = [];
+function shopPreviewFrame(t){
+  const cvs = $('#shop-cv');
+  if (!cvs || !$('#scr-shop').classList.contains('active')){ shopRaf = 0; return; }
+  shopRaf = requestAnimationFrame(shopPreviewFrame);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = cvs.clientWidth || 300, H = cvs.clientHeight || 120;
+  if (cvs.width !== Math.round(W * dpr)){ cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr); }
+  const c = cvs.getContext('2d');
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, W, H);
+  const look = shopLook();
+  const C = Math.max(16, Math.min(28, H / 4.2));
+  const n = 16;
+  const speed = motionOK() ? t / 1600 : 0.6;
+  const P = [];
+  // a figure-eight swim with a little side-to-side slither on top
+  for (let i = 0; i < n; i++){
+    const u = speed - i * 0.075;
+    const x = W / 2 + Math.sin(u) * (W / 2 - C * 1.6);
+    const y = H / 2 + Math.sin(u * 2) * (H / 2 - C * 1.2) + Math.sin(u * 9) * C * 0.35;
+    P.push({ x:x, y:y });
+  }
+  const ang = Math.atan2(P[0].y - P[1].y, P[0].x - P[1].x);
+  const cols = P.map((_, i) => segColor(i, n, t, look.sk, false, null, null));
+  // trail particles behind the tail
+  if (look.trail && motionOK() && Math.random() < 0.6){
+    const tp = P[n - 1];
+    const d = look.trail;
+    const sc = C / 24;
+    shopParts.push({ x:tp.x + (Math.random() - .5) * C * .4, y:tp.y + (Math.random() - .5) * C * .4,
+      vx:(Math.random() - .5) * .4 * sc, vy:(d.rise ? -.5 : (Math.random() - .5) * .3) * sc, life:d.life || .7,
+      color:d.col === 'rainbow' ? 'hsl(' + rnd(360) + ',95%,62%)' : d.col, r:(d.size || 1.6) * sc * 1.2,
+      shape:d.shape || 'sq', glyph:d.glyph, spin:Math.random() * 6 });
+  }
+  for (let i = shopParts.length - 1; i >= 0; i--){
+    const p = shopParts[i]; p.x += p.vx; p.y += p.vy; p.life -= .016;
+    if (p.life <= 0){ shopParts.splice(i, 1); continue; }
+    c.save(); drawParticle(c, p); c.restore();
+  }
+  paintNoodle(c, P, { C:C, sk:look.sk, cols:cols, ang:ang, t:t, drowsy:0, stunned:false, evo:evoStage(), hat:look.hat, aura:look.aura, ink:isLight() });
+}
+function startShopPreview(){ shopParts = []; if (!shopRaf) shopRaf = requestAnimationFrame(shopPreviewFrame); }
+
+/* static mini-snake for a skin card */
+function skinThumb(sk){
+  const c = document.createElement('canvas');
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = 96, H = 40;
+  c.width = W * dpr; c.height = H * dpr;
+  c.style.width = W + 'px'; c.style.height = H + 'px';
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const n = 7, C = 14, P = [];
+  for (let i = 0; i < n; i++) P.push({ x:W - 14 - i * 11, y:H / 2 + Math.sin(i * 0.9) * 6 });
+  const cols = P.map((_, i) => segColor(i, n, 1200, sk, false, null, null));
+  paintNoodle(g, P, { C:C, sk:sk, cols:cols, ang:0, t:1200, drowsy:0, stunned:false, evo:0, ink:isLight() });
+  return c;
+}
+function shopCard(o){
+  // o: { kind, id, ic, thumb, name, ds, owned, worn, cost, gated, gatedMsg, level, max, extra, buyLabel }
+  const afford = save.bytes >= (o.cost || 0);
+  let btn;
+  if (o.max){
+    btn = o.level >= o.max ? '<button class="btn sm lime" disabled>Maxed</button>'
+      : o.gated ? '<button class="btn sm" disabled>&#128274; ' + esc(o.gatedMsg) + '</button>'
+      : '<button class="btn sm' + (afford ? ' primary' : '') + '" data-act="buy" data-kind="' + o.kind + '" data-id="' + o.id + '"' + (afford ? '' : ' disabled') + '>&#9670; ' + o.cost + '</button>';
+  } else if (o.worn) btn = '<button class="btn sm lime" disabled>&#10003; Wearing</button>';
+  else if (o.owned) btn = '<button class="btn sm" data-act="wear" data-kind="' + o.kind + '" data-id="' + o.id + '">Wear</button>';
+  else if (o.gated) btn = '<button class="btn sm" disabled>&#128274; ' + esc(o.gatedMsg) + '</button>';
+  else btn = '<button class="btn sm' + (afford ? ' primary' : '') + '" data-act="buy" data-kind="' + o.kind + '" data-id="' + o.id + '"' + (afford ? '' : ' disabled') + '>&#9670; ' + o.cost + '</button>';
+  const trying = SHOP_TRY[o.kind] === o.id;
+  const pips = o.max > 1 ? '<span class="pips">' + Array.from({ length:o.max }, (_, k) => k < o.level ? '●' : '○').join('') + '</span>' : '';
+  return '<div class="sitem' + (o.worn ? ' worn' : o.owned || (o.max && o.level) ? ' owned' : '') + (o.gated ? ' gated' : '') + (trying ? ' trying' : '') +
+    '" ' + (o.tryable ? 'data-try="' + o.kind + ':' + o.id + '" tabindex="0" role="button" aria-label="Try on ' + esc(o.name) + '"' : '') + '>' +
+    '<div class="sthumb" data-thumb="' + (o.thumb ? o.id : '') + '">' + (o.thumb ? '' : '<span>' + (o.ic || '∅') + '</span>') + '</div>' +
+    '<div class="sinfo"><b>' + esc(o.name) + pips + '</b><span title="' + esc(o.ds) + '">' + esc(o.ds) + '</span>' + (o.extra || '') + '</div>' +
+    '<div class="sbuy">' + btn + '</div></div>';
+}
+function renderShop(){
+  const rk = rankIndex(save.xp || 0);
+  $('#wallet-shop').textContent = save.bytes.toLocaleString();
+  $('#shoptabs').innerHTML = SHOP_TABS.map(tb =>
+    '<button class="shoptab' + (tb.id === SHOP_TAB ? ' on' : '') + '" data-tab="' + tb.id + '" role="tab" aria-selected="' + (tb.id === SHOP_TAB) + '">' +
+    '<span>' + tb.ic + '</span>' + tb.name + '</button>').join('');
+  $$('#shoptabs .shoptab').forEach(b => b.onclick = () => { SHOP_TAB = b.dataset.tab; SFX.click(); renderShop(); });
+  const look = shopLook();
+  const tryNames = Object.keys(SHOP_TRY).filter(k => SHOP_TRY[k]);
+  $('#fitname').innerHTML = tryNames.length
+    ? 'Trying on: <b>' + tryNames.map(k => esc(({ skin:look.sk.name, aura:look.aura ? look.aura.name : 'No Glow', hat:look.hat ? look.hat.name : 'Bare Head', trail:look.trail ? look.trail.name : 'No Trail' })[k])).join(' + ') +
+      '</b> <button class="btn xs ghost" id="fit-reset">Back to my look</button>'
+    : 'Wearing: <b>' + esc(look.sk.name) + (look.aura ? ' + ' + esc(look.aura.name) : '') + (look.hat ? ' + ' + esc(look.hat.name) : '') + (look.trail ? ' + ' + esc(look.trail.name) : '') +
+      '</b> <span class="tiny" style="color:var(--dimmer)">&middot; tap anything to try it on</span>';
+  const fr = $('#fit-reset'); if (fr) fr.onclick = () => { SHOP_TRY = {}; SFX.click(); renderShop(); };
+
+  let html = '', intro = '';
+  const gate = r => rk < r ? { gated:true, gatedMsg:RANKS[r].name } : {};
+  if (SHOP_TAB === 'power'){
+    intro = 'Power-ups appear on the board during play. Grab one for a boost. Unlock new kinds here &mdash; none of them ever give away an answer.';
+    html = POWERUPS.map(p => {
+      const owned = !p.cost || (save.powers || []).indexOf(p.id) >= 0;
+      return shopCard(Object.assign({ kind:'power', id:p.id, ic:p.ic, name:p.name, ds:p.ds + (p.only === 'fog' ? ' (fog missions only)' : '') + '.',
+        owned:owned, worn:false, cost:p.cost }, owned ? { worn:true } : gate(p.rank || 0))).replace('&#10003; Wearing', owned && !p.cost ? 'Always on' : '&#10003; Unlocked');
+    }).join('');
+  } else if (SHOP_TAB === 'gear'){
+    intro = 'Upgrades last forever. <b>Gear</b> helps during a mission; <b>Training</b> makes Noodle himself stronger &mdash; and changes how he looks. Evolution: <b>' +
+      esc(EVO[evoStage()].name) + '</b> (' + evoTotal() + ' training levels).';
+    html = '<div class="shopsub">Gear</div>' + GEAR.map(it => {
+      const lvl = save.upgrades[it.id] || 0;
+      return shopCard(Object.assign({ kind:'gear', id:it.id, ic:it.ic, name:it.name, ds:it.ds, level:lvl, max:it.max, cost:lvl < it.max ? it.cost[lvl] : 0 }, gate(it.rank)));
+    }).join('') + '<div class="shopsub">Noodle Training</div>' + LAB.map(it => {
+      const lvl = labLvl(it.id);
+      return shopCard(Object.assign({ kind:'lab', id:it.id, ic:it.ic, name:it.name, ds:it.ds, level:lvl, max:it.max, cost:lvl < it.max ? it.cost[lvl] : 0,
+        extra: lvl ? '<em>Now: ' + esc(it.eff(lvl)) + '</em>' : '' }, gate(it.rank)));
+    }).join('');
+  } else if (SHOP_TAB === 'skins'){
+    intro = 'Tap a skin to see it on Noodle before you buy.';
+    html = SKINS.map(sk => {
+      const owned = save.skins.indexOf(sk.id) >= 0;
+      return shopCard(Object.assign({ kind:'skin', id:sk.id, thumb:true, name:sk.name, ds:PATTERN_DESC[sk.pat] || '', owned:owned,
+        worn:save.skin === sk.id, cost:sk.cost, tryable:true }, owned ? {} : gate(sk.rank)));
+    }).join('');
+  } else if (SHOP_TAB === 'auras'){
+    intro = 'A glow that follows Noodle everywhere. Tap one to try it on.';
+    html = AURAS.map(a => {
+      const owned = a.cost === 0 || (save.auras || []).indexOf(a.id) >= 0;
+      return shopCard({ kind:'aura', id:a.id, ic:a.ic, name:a.name, ds:a.ds, owned:owned, worn:(save.aura || 'none') === a.id, cost:a.cost, tryable:true });
+    }).join('');
+  } else if (SHOP_TAB === 'hats'){
+    intro = 'He insists he is dressing for the job he wants. Tap one to try it on.';
+    html = HATS.map(h => {
+      const owned = h.cost === 0 || (save.hats || []).indexOf(h.id) >= 0;
+      return shopCard({ kind:'hat', id:h.id, ic:h.ic || (h.draw === 'halo' ? '😇' : h.draw === 'wizard' ? '🧙' : h.draw === 'propeller' ? '🌀' : '∅'),
+        name:h.name, ds:h.ds, owned:owned, worn:(save.hat || 'none') === h.id, cost:h.cost, tryable:true });
+    }).join('');
+  } else {
+    intro = 'What sparkles behind his tail. Tap one to try it on.';
+    html = TRAILS.map(tr => {
+      const owned = tr.cost === 0 || (save.trails || []).indexOf(tr.id) >= 0;
+      return shopCard({ kind:'trail', id:tr.id, ic:tr.ic, name:tr.name, ds:tr.ds, owned:owned, worn:(save.trail || 'none') === tr.id, cost:tr.cost, tryable:true });
+    }).join('');
+  }
+  $('#shop-intro').innerHTML = intro;
+  $('#shop-grid').innerHTML = html;
+  if (SHOP_TAB === 'skins') $$('#shop-grid [data-thumb]').forEach(el => { if (el.dataset.thumb) el.appendChild(skinThumb(skinById(el.dataset.thumb))); });
+
+  $$('#shop-grid [data-try]').forEach(el => {
+    const go = e => {
+      if (e.target.closest('button')) return;
+      const parts = el.dataset.try.split(':');
+      SHOP_TRY[parts[0]] = SHOP_TRY[parts[0]] === parts[1] ? null : parts[1];
+      SFX.click(); renderShop();
+    };
+    el.onclick = go;
+    el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(e); } };
+  });
+  $$('#shop-grid [data-act]').forEach(b => b.onclick = () => shopAction(b.dataset.act, b.dataset.kind, b.dataset.id));
+  startShopPreview();
+}
+function shopAction(act, kind, id){
+  const rk = rankIndex(save.xp || 0);
+  const spend = cost => { if (save.bytes < cost){ SFX.deny(); return false; } save.bytes -= cost; return true; };
+  const own = (key, wearKey) => {
+    save[key] = save[key] || [];
+    if (save[key].indexOf(id) < 0) save[key].push(id);
+    if (wearKey) save[wearKey] = id;
+  };
+  const list = { skin:SKINS, aura:AURAS, hat:HATS, trail:TRAILS, power:POWERUPS, gear:GEAR, lab:LAB }[kind];
+  const it = list.filter(x => x.id === id)[0];
+  if (!it) return;
+  if (act === 'wear'){
+    if (kind === 'skin') save.skin = id;
+    else save[kind] = id;               // aura / hat / trail
+    SHOP_TRY[kind] = null;
+    persist(); SFX.click(); renderShop(); updateHustleHUD();
+    return;
+  }
+  if (kind === 'gear' || kind === 'lab'){
+    const lvl = kind === 'gear' ? (save.upgrades[id] || 0) : labLvl(id);
+    if (lvl >= it.max || rk < it.rank || !spend(it.cost[lvl])) return SFX.deny();
+    if (kind === 'gear') save.upgrades[id] = lvl + 1; else save.lab[id] = lvl + 1;
+    if (kind === 'lab') toast('rank', 'Noodle Upgraded', it.name + ' → level ' + (lvl + 1), it.eff(lvl + 1));
+  } else {
+    if ((it.rank || 0) > rk || !spend(it.cost || 0)) return SFX.deny();
+    if (kind === 'skin'){ own('skins'); save.skin = id; }
+    else if (kind === 'aura') own('auras', 'aura');
+    else if (kind === 'hat') own('hats', 'hat');
+    else if (kind === 'trail') own('trails', 'trail');
+    else if (kind === 'power') own('powers');
+    SHOP_TRY[kind] = null;
+  }
+  persist(); SFX.buy(); checkBadges(); renderShop(); renderWallets(); updateHustleHUD();
 }
 
 /* ============================================================
