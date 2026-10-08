@@ -1112,6 +1112,47 @@ body[data-bg="paper"] .shoptab{background:#fffdf7}
 body[data-bg="paper"] .sitem{background:#fffdf7}
 body[data-bg="paper"] .sthumb{background:rgba(0,0,0,.05)}
 @media (max-width:420px){ .shoptab{padding:9px 11px;font-size:13px} .sitem{grid-template-columns:48px 1fr auto;gap:8px} }
+/* ---------- boss ---------- */
+.bossbar{flex:1 1 100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;
+  border:1px solid rgba(255,66,200,.55);border-radius:var(--r-sm,11px);padding:5px 10px;background:linear-gradient(90deg,rgba(60,20,70,.85),rgba(20,10,40,.85));
+  box-shadow:0 0 18px rgba(255,66,200,.25)}
+.bossav{grid-row:1/span 2;width:46px;height:42px;animation:bossbob 2.4s ease-in-out infinite}
+.bossav svg{width:100%;height:100%;overflow:visible}
+.bossav.hit{animation:bosshit .5s ease}
+.bossav.laugh{animation:bosslaugh .6s ease}
+.bossav.defeated{animation:bossdie 1.4s ease forwards}
+@keyframes bossbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bosshit{0%{transform:translateX(0);filter:brightness(3)}20%{transform:translateX(-6px) rotate(-8deg)}40%{transform:translateX(6px) rotate(6deg)}60%{transform:translateX(-3px)}100%{transform:none;filter:none}}
+@keyframes bosslaugh{0%,100%{transform:scale(1)}30%{transform:scale(1.15) rotate(4deg)}60%{transform:scale(1.08) rotate(-4deg)}}
+@keyframes bossdie{0%{transform:none;opacity:1}30%{transform:scale(1.3) rotate(12deg);filter:brightness(3)}100%{transform:scale(.2) rotate(-200deg) translateY(-20px);opacity:0}}
+.bossname{font-family:var(--mono);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ffb8e8}
+.bossname span{color:var(--dim);font-weight:400;margin-left:6px}
+.bosshp{height:9px;border-radius:99px;background:rgba(0,0,0,.45);overflow:hidden;margin-top:3px;border:1px solid rgba(255,66,200,.4)}
+.bosshp i{display:block;height:100%;width:100%;border-radius:99px;background:linear-gradient(90deg,#ff42c8,#9b6bff);transition:width .5s cubic-bezier(.3,1.4,.4,1)}
+.bosssay{grid-column:1/-1;font-size:12.5px;line-height:1.35;max-height:0;overflow:hidden;opacity:0;transition:all .25s ease}
+.bosssay.show{max-height:60px;opacity:1;margin-top:4px}
+.bosssay .bp{color:#ffd0f0;font-style:italic;margin-right:8px}
+.bosssay .ba{color:var(--lime);font-weight:700}
+body[data-bg="paper"] .bossbar{background:linear-gradient(90deg,#fbe9f5,#efe7fb)}
+body[data-bg="paper"] .bossname{color:#a81a72}
+body[data-bg="paper"] .bosssay .bp{color:#7a1452}
+.bossintro{text-align:center}
+.bigboss{width:min(220px,55vw);margin:6px auto 4px;animation:bossrise .9s cubic-bezier(.2,1.4,.4,1)}
+.bigboss svg{width:100%;height:auto;filter:drop-shadow(0 0 24px rgba(255,66,200,.5))}
+@keyframes bossrise{from{transform:translateY(40px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.bossquote{font-style:italic;color:#ffd0f0}
+body.calm .bossav,body.calm .bigboss{animation:none!important}
+@media (max-width:640px){ .bossav{width:38px;height:34px} .bossbar{padding:4px 8px} }
+/* ---------- living background ---------- */
+#bg-cv{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;display:none}
+body.bg-live #bg-cv{display:block}
+body.playing #bg-cv{display:none}
+/* the title card turns to glass so the snakes show through behind the words */
+body.bg-live .hero{background:linear-gradient(180deg,rgba(10,16,38,.5),rgba(6,10,26,.62));
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+body.bg-live[data-bg="paper"] .hero{background:linear-gradient(180deg,rgba(255,253,247,.62),rgba(250,246,236,.72))}
+body.bg-live[data-bg="black"] .hero{background:rgba(0,0,0,.6)}
+body.bg-live .hero::before{opacity:.5}
 /* ---------- grades ---------- */
 .gradechip{display:inline-flex;align-items:baseline;gap:4px;font-family:var(--mono);font-weight:900;font-size:15px;
   padding:2px 8px;border-radius:var(--r-xs,8px);border:1px solid currentColor;white-space:nowrap}
@@ -1411,6 +1452,7 @@ body.calm .bigstart{animation:none}
 </style>
 </head>
 <body>
+<canvas id="bg-cv" aria-hidden="true"></canvas>
 <div id="app">
 
   <header class="topbar">
@@ -1446,6 +1488,7 @@ body.calm .bigstart{animation:none}
       <div id="playerrow" class="playerrow"></div>
       <div class="herotools">
         <button class="btn xs ghost" id="btn-sound">&#128266; Sound: On</button>
+        <button class="btn xs ghost" id="btn-music">&#127925; Music: On</button>
         <button class="btn xs ghost" id="btn-walls">&#8734; Walls: Wrap</button>
         <button class="btn xs ghost" id="btn-access">&#9855; Display</button>
         <button class="btn xs ghost" id="btn-newplayer" title="Let a different student type their own name">&#65291; New Player</button>
@@ -1458,6 +1501,7 @@ body.calm .bigstart{animation:none}
         <button class="btn sm ghost" id="a-calm">&#127807; Calm mode</button>
         <button class="btn sm ghost" id="a-noodle">&#128172; Noodle&rsquo;s comments</button>
         <button class="btn sm ghost" id="a-read">&#128264; Read sentences aloud</button>
+        <button class="btn sm ghost" id="a-buzz">&#128243; Buzz on mistakes</button>
         <div class="playerlbl">Background</div>
         <div class="bgrow" id="bgrow"></div>
       </div>
@@ -1594,6 +1638,12 @@ body.calm .bigstart{animation:none}
         <div class="stat hearts"><span>LIVES</span><b id="hud-lives">&hearts;&hearts;&hearts;</b></div>
         <div class="stat" id="stat-shield" hidden><span>SHIELD</span><b id="hud-shield">&#128737;</b></div>
         <div class="stat" id="stat-timer" hidden><span>TIME</span><b id="hud-timer">0:00</b></div>
+      </div>
+      <div class="bossbar" id="bossbar" hidden>
+        <div class="bossav" id="boss-av"></div>
+        <div class="bossmeta"><div class="bossname">Lord Mistakes-Were-Made <span id="boss-hp-text"></span></div>
+          <div class="bosshp"><i id="boss-hp"></i></div></div>
+        <div class="bosssay" id="boss-say"></div>
       </div>
     </div>
 
@@ -1900,6 +1950,7 @@ body.calm .bigstart{animation:none}
           <button class="btn sm" id="t-codex">&#128218; Unlock Full Codex</button>
           <button class="btn sm" id="t-coach">&#8635; Replay Coach Pop-ups</button>
           <button class="btn sm" id="t-projector">&#128253; Projector Mode: Off</button>
+          <button class="btn sm" id="t-music">&#127925; Music in Class: Allowed</button>
           <button class="btn sm danger" id="t-clearlog">Clear Log</button>
           <button class="btn sm danger" id="t-reset">Reset Everything</button>
         </div>
@@ -3488,7 +3539,8 @@ const DEFAULT_SAVE = {
   settings: { noodle:true, powerups:true, sound:true, wrap:true, timer:false, hints:true, drills:true, bandLock:false,
               pace:'medium', paceLock:false, prep:true, spiral:true,
               cbsafe:false, bigtext:false, hicontrast:false, calm:false, scaffold:'auto', typing:true,
-              bg:'midnight', preTest:'offer', postTest:false, autoPlace:true },
+              bg:'midnight', preTest:'offer', postTest:false, autoPlace:true,
+              music:true, buzz:true, musicAllowed:true },
   missed: [],
   student: '',
   log: []
@@ -3497,7 +3549,7 @@ const DEFAULT_SAVE = {
 let storageOK = true;
 const PROF_KEY  = 'passiveSnake.profiles.v1';
 const CLASS_KEY = 'passiveSnake.class.v1';
-const TEACHER_SETTINGS = ['timer','hints','drills','bandLock','paceLock','prep','spiral','scaffold','preTest','postTest','autoPlace'];
+const TEACHER_SETTINGS = ['timer','hints','drills','bandLock','paceLock','prep','spiral','scaffold','preTest','postTest','autoPlace','musicAllowed'];
 let profileName = '';
 let profiles = { active:'', names:[] };
 let classData = { log:[], settings:{} };
@@ -3665,83 +3717,219 @@ function bestKey(missionId){ return 'b' + save.band + ':' + missionId; }
    7. AUDIO  (Web Audio API, fully synthesized)
    ============================================================ */
 const SFX = (function(){
-  let ctx = null;
+  /* Every sound is synthesised here: no files, works offline. Effects and
+     music run through separate buses into a compressor, so a burst of
+     sounds never clips and the music can be ducked under dialogs. */
+  let ctx = null, master = null, sfxBus = null, musicBus = null, echo = null;
   function ac(){
     if (!save.settings.sound) return null;
     if (!ctx){
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
       try { ctx = new AC(); } catch(e){ return null; }
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -14; comp.ratio.value = 4;
+      master = ctx.createGain(); master.gain.value = 0.9;
+      master.connect(comp); comp.connect(ctx.destination);
+      sfxBus = ctx.createGain(); sfxBus.connect(master);
+      musicBus = ctx.createGain(); musicBus.gain.value = 0.85; musicBus.connect(master);
+      // a short echo gives sparkle sounds some space
+      echo = ctx.createDelay(1); echo.delayTime.value = 0.17;
+      const fb = ctx.createGain(); fb.gain.value = 0.28;
+      const wet = ctx.createGain(); wet.gain.value = 0.5;
+      echo.connect(fb); fb.connect(echo); echo.connect(wet); wet.connect(master);
     }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
+  const num = (v, dflt, lo, hi) => { const n = +v; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : dflt; };
   function blip(o){
     const c = ac(); if (!c) return;
-    // Sound sits in the hot path: a single non-finite number would throw out of
-    // here and take the eat handler with it. Nothing musical is worth that, so
-    // clamp everything to a sane finite value before it reaches the audio graph.
-    const num = (v, dflt, lo, hi) => {
-      const n = +v;
-      return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : dflt;
-    };
-    o = {
-      f0: num(o.f0, 440, 20, 18000),
-      f1: o.f1 == null ? 0 : num(o.f1, 440, 20, 18000),
-      dur: num(o.dur, 0.12, 0.01, 4),
-      vol: num(o.vol, 0.16, 0.0002, 1),
-      delay: num(o.delay, 0, 0, 5),
-      type: o.type || 'square'
-    };
-    const t0 = c.currentTime + o.delay;
-    const osc = c.createOscillator();
-    const gain = c.createGain();
+    // Sound sits in the hot path: a non-finite number must never throw out of
+    // here and take the eat handler with it, so everything is clamped first.
+    const f0 = num(o.f0, 440, 20, 18000), f1 = o.f1 == null ? 0 : num(o.f1, 440, 20, 18000);
+    const dur = num(o.dur, 0.12, 0.01, 4), vol = num(o.vol, 0.16, 0.0002, 1), delay = num(o.delay, 0, 0, 8);
+    const t0 = (o.at || c.currentTime) + delay;
+    const osc = c.createOscillator(), gain = c.createGain();
     osc.type = o.type || 'square';
-    osc.frequency.setValueAtTime(o.f0, t0);
-    if (o.f1) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.f1), t0 + o.dur);
-    const v = (o.vol == null ? .16 : o.vol);
+    if (o.detune) osc.detune.value = o.detune;
+    osc.frequency.setValueAtTime(f0, t0);
+    if (f1) osc.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t0 + dur);
     gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.exponentialRampToValueAtTime(v, t0 + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
-    osc.connect(gain); gain.connect(c.destination);
-    osc.start(t0); osc.stop(t0 + o.dur + .02);
+    gain.gain.exponentialRampToValueAtTime(vol, t0 + (o.attack || 0.008));
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain);
+    gain.connect(o.bus === 'music' ? musicBus : sfxBus);
+    if (o.wet && echo){ const s = c.createGain(); s.gain.value = o.wet; gain.connect(s); s.connect(echo); }
+    osc.start(t0); osc.stop(t0 + dur + .03);
   }
-  function noise(dur, vol, hp){
+  let noiseBuf = null;
+  function noise(dur, vol, freq, o){
     const c = ac(); if (!c) return;
-    const len = Math.floor(c.sampleRate * dur);
-    const buf = c.createBuffer(1, len, c.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
-    const src = c.createBufferSource(); src.buffer = buf;
-    const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp || 900;
-    const g = c.createGain(); g.gain.value = vol == null ? .12 : vol;
-    src.connect(f); f.connect(g); g.connect(c.destination);
-    src.start();
+    o = o || {};
+    if (!noiseBuf){
+      noiseBuf = c.createBuffer(1, c.sampleRate, c.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const t0 = (o.at || c.currentTime) + (o.delay || 0);
+    const src = c.createBufferSource(); src.buffer = noiseBuf;
+    const f = c.createBiquadFilter(); f.type = o.type || 'highpass'; f.frequency.value = freq || 900;
+    if (o.sweep) f.frequency.exponentialRampToValueAtTime(o.sweep, t0 + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(num(vol, .1, .0002, 1), t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f); f.connect(g); g.connect(o.bus === 'music' ? musicBus : sfxBus);
+    src.start(t0, Math.random() * 0.5); src.stop(t0 + dur + .02);
   }
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  const PENTA = [0, 2, 4, 7, 9];
+  const penta = (step, base) => base + Math.floor(step / 5) * 12 + PENTA[((step % 5) + 5) % 5];
+
+  /* ---------------- music ----------------
+     A small generative chiptune loop. Layers come in as Noodle's momentum
+     climbs, so the music literally gets more active as the student does. */
+  const SONGS = {
+    normal: { bpm:108, chords:[[45,'m'],[41,'M'],[48,'M'],[43,'M']],
+              lead:[0,2,4,2, 5,4,2,0, 0,2,4,5, 7,5,4,2] },
+    boss:   { bpm:128, chords:[[38,'m'],[46,'M'],[43,'m'],[45,'M']],
+              lead:[0,1,3,1, 0,3,5,3, 7,5,3,1, 0,1,0,-1] }
+  };
+  const M = { on:false, song:'normal', step:0, next:0, timer:0, level:0 };
+  function tri(root, q){ return [root, root + (q === 'm' ? 3 : 4), root + 7]; }
+  function scheduleStep(s, t){
+    const song = SONGS[M.song], bar = Math.floor(s / 8) % song.chords.length, beat = s % 8;
+    const ch = song.chords[bar], tones = tri(ch[0], ch[1]);
+    const L = M.level, boss = M.song === 'boss';
+    // bass
+    if (beat === 0 || beat === 3 || beat === 4 || beat === 6)
+      blip({ at:t, f0:hz(ch[0] - 12 + (beat === 6 ? 7 : 0)), dur:.22, type:'triangle', vol:.11, bus:'music' });
+    // hats
+    noise(.03, beat % 2 ? .025 : .014, 7000, { at:t, bus:'music' });
+    // drums from level 1 (always on for the boss)
+    if (L >= 1 || boss){
+      if (beat === 0 || beat === 4) blip({ at:t, f0:140, f1:42, dur:.16, type:'sine', vol:.22, bus:'music' });
+      if (beat === 2 || beat === 6) noise(.09, .05, 1800, { at:t, type:'bandpass', bus:'music' });
+    }
+    // arpeggio from level 1
+    if (L >= 1){
+      const n = tones[[0,1,2,1,0,1,2,1][beat]] + 24;
+      blip({ at:t, f0:hz(n), dur:.1, type:boss ? 'sawtooth' : 'square', vol:.022, bus:'music' });
+    }
+    // a lead melody from level 2, an octave sparkle at level 3
+    if (L >= 2 && beat % 2 === 0){
+      const mel = song.lead[(Math.floor(s / 2)) % song.lead.length];
+      const n = penta(mel, ch[0] + 24);
+      blip({ at:t, f0:hz(n), dur:.2, type:'square', vol:.026, wet:.3, bus:'music' });
+      if (L >= 3) blip({ at:t, f0:hz(n + 12), dur:.14, type:'triangle', vol:.018, bus:'music' });
+    }
+  }
+  function tick(){
+    if (!M.on || !ctx) return;
+    const spb = 60 / SONGS[M.song].bpm / 2;   // seconds per eighth note
+    while (M.next < ctx.currentTime + 0.12){ scheduleStep(M.step, M.next); M.next += spb; M.step++; }
+  }
+  const music = {
+    start(song){
+      if (!save.settings.sound || save.settings.music === false || save.settings.musicAllowed === false) return;
+      const c = ac(); if (!c) return;
+      if (M.on && M.song === song) return;
+      M.song = song || 'normal';
+      if (!M.on){ M.step = 0; M.next = c.currentTime + 0.08; }
+      M.on = true;
+      musicBus.gain.cancelScheduledValues(c.currentTime);
+      musicBus.gain.setTargetAtTime(0.85, c.currentTime, 0.1);
+      clearInterval(M.timer); M.timer = setInterval(tick, 30);
+    },
+    stop(){
+      M.on = false; clearInterval(M.timer); M.timer = 0;
+      if (ctx && musicBus){ musicBus.gain.cancelScheduledValues(ctx.currentTime); musicBus.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.08); }
+    },
+    duck(on){
+      if (!ctx || !musicBus || !M.on) return;
+      musicBus.gain.setTargetAtTime(on ? 0.25 : 0.85, ctx.currentTime, 0.12);
+    },
+    level(n){ M.level = n | 0; },
+    get playing(){ return M.on; }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) ctx.suspend(); else if (save.settings.sound) ctx.resume();
+  });
+
   return {
+    music: music,
     unlock(){ ac(); },
-    eat(streak){
-      const base = 520 + Math.min(streak, 8) * 55;
-      blip({ f0:base, f1:base * 1.7, dur:.09, type:'square', vol:.13 });
+    /* each correct word plays the next note of a scale, in the voice of its
+       job, so a whole correct sentence plays a little tune */
+    eat(streak, role, idx){
+      const step = (idx || 0) + Math.min(streak || 0, 6);
+      const n = penta(step, 72);
+      if (role === 'verb'){
+        blip({ f0:hz(n), f1:hz(n + 12), dur:.12, type:'square', vol:.09 });
+        blip({ f0:hz(n + 7), dur:.14, type:'triangle', vol:.06, delay:.03, wet:.2 });
+      } else if (role === 'recv'){
+        blip({ f0:hz(n), dur:.32, type:'sine', vol:.14, wet:.35 });
+        blip({ f0:hz(n + 12), dur:.22, type:'sine', vol:.05, wet:.3 });
+      } else {
+        blip({ f0:hz(n), dur:.14, type:'square', vol:.08 });
+        blip({ f0:hz(n - 12), dur:.16, type:'triangle', vol:.1 });
+      }
+      noise(.045, .07, 2600, { type:'bandpass' });   // the crunch
     },
-    wrong(){ blip({ f0:190, f1:70, dur:.30, type:'sawtooth', vol:.16 }); noise(.18, .07, 400); },
-    sentence(){ [523, 659, 784, 1046].forEach((f, i) => blip({ f0:f, f1:f, dur:.16, type:'square', vol:.12, delay:i * .075 })); },
+    wrong(){
+      blip({ f0:220, f1:105, dur:.24, type:'sine', vol:.22 });
+      blip({ f0:233, f1:110, dur:.2, type:'triangle', vol:.08 });
+      noise(.12, .08, 500, { type:'lowpass' });
+    },
+    sentence(){ [72, 76, 79, 84].forEach((m, i) => blip({ f0:hz(m), dur:.18, type:'square', vol:.08, delay:i * .07, wet:.3 })); },
     surge(){
-      [392,523,659,880,1174].forEach((f,i)=>blip({f0:f,f1:f*1.01,dur:.3,type:'triangle',vol:.10,delay:i*.05}));
-      noise(.35,.05,1400);
+      [60, 64, 67, 72].forEach(m => blip({ f0:hz(m), dur:.6, type:'triangle', vol:.07 }));
+      [72, 76, 79, 84, 88].forEach((m, i) => blip({ f0:hz(m), dur:.22, type:'square', vol:.06, delay:.05 + i * .06, wet:.35 }));
+      noise(.5, .05, 600, { type:'bandpass', sweep:5000 });
     },
-    complete(){ [392, 523, 659, 784, 1046, 1319].forEach((f, i) => blip({ f0:f, f1:f * 1.02, dur:.22, type:'square', vol:.12, delay:i * .085 })); },
-    life(){ blip({ f0:300, f1:80, dur:.45, type:'sawtooth', vol:.17 }); noise(.3, .09, 260); },
-    fail(){ [330, 262, 196, 147].forEach((f, i) => blip({ f0:f, f1:f * .9, dur:.28, type:'sawtooth', vol:.14, delay:i * .13 })); },
-    click(){ blip({ f0:660, f1:880, dur:.05, type:'square', vol:.07 }); },
-    buy(){ [660, 880, 1174].forEach((f, i) => blip({ f0:f, f1:f, dur:.12, type:'triangle', vol:.11, delay:i * .06 })); },
-    badge(){ [880,1174,1568].forEach((f,i)=>blip({f0:f,f1:f,dur:.18,type:'triangle',vol:.10,delay:i*.08})); },
-    rankup(){ [262,330,392,523,659,784].forEach((f,i)=>blip({f0:f,f1:f*1.01,dur:.26,type:'square',vol:.11,delay:i*.09})); },
-    drill(){ [440,392,440].forEach((f,i)=>blip({f0:f,f1:f,dur:.14,type:'triangle',vol:.10,delay:i*.1})); },
-    deny(){ blip({ f0:160, f1:120, dur:.16, type:'square', vol:.11 }); },
-    start(){ [262, 392, 523].forEach((f, i) => blip({ f0:f, f1:f, dur:.13, type:'square', vol:.11, delay:i * .07 })); }
+    tierUp(tier){
+      const base = 67 + tier * 4;
+      [0, 4, 7, 12].forEach((d, i) => blip({ f0:hz(base + d), dur:.13, type:'triangle', vol:.07, delay:i * .045, wet:.3 }));
+      noise(.3, .03, 2000, { type:'bandpass', sweep:9000 });
+    },
+    complete(){
+      [67, 72, 76, 79, 84].forEach((m, i) => blip({ f0:hz(m), dur:.2, type:'square', vol:.08, delay:i * .09, wet:.25 }));
+      [72, 76, 79, 84].forEach(m => blip({ f0:hz(m), dur:.9, type:'triangle', vol:.06, delay:.5, wet:.3 }));
+    },
+    life(){ blip({ f0:300, f1:80, dur:.45, type:'sawtooth', vol:.12 }); noise(.3, .09, 300, { type:'lowpass' }); },
+    fail(){ [64, 60, 57, 52].forEach((m, i) => blip({ f0:hz(m), f1:hz(m) * .97, dur:.28, type:'triangle', vol:.12, delay:i * .14 })); },
+    click(){ blip({ f0:1100, f1:900, dur:.035, type:'sine', vol:.07 }); },
+    buy(){ blip({ f0:hz(83), dur:.08, type:'square', vol:.07 }); blip({ f0:hz(88), dur:.25, type:'square', vol:.07, delay:.08, wet:.25 }); },
+    badge(){ [79, 84, 88, 91].forEach((m, i) => blip({ f0:hz(m), dur:.18, type:'triangle', vol:.08, delay:i * .07, wet:.35 })); },
+    rankup(){ [60, 64, 67, 72, 76, 79].forEach((m, i) => blip({ f0:hz(m), dur:.24, type:'square', vol:.08, delay:i * .085, wet:.3 })); },
+    drill(){ [69, 67, 69].forEach((m, i) => blip({ f0:hz(m), dur:.14, type:'triangle', vol:.09, delay:i * .1 })); },
+    deny(){ blip({ f0:160, f1:120, dur:.14, type:'square', vol:.08 }); },
+    start(){ [60, 67, 72].forEach((m, i) => blip({ f0:hz(m), dur:.13, type:'square', vol:.08, delay:i * .07 })); },
+    bossRoar(){
+      blip({ f0:70, f1:52, dur:.9, type:'sawtooth', vol:.16 });
+      blip({ f0:74, f1:55, dur:.9, type:'sawtooth', vol:.12, detune:15 });
+      noise(.8, .12, 400, { type:'lowpass', sweep:120 });
+    },
+    bossHit(crit){
+      blip({ f0:180, f1:60, dur:.18, type:'square', vol:.14 });
+      noise(.16, .14, 900, { type:'lowpass' });
+      if (crit) [84, 91].forEach((m, i) => blip({ f0:hz(m), dur:.16, type:'triangle', vol:.08, delay:.05 + i * .06, wet:.4 }));
+    },
+    bossLaugh(){ [55, 52, 55, 52].forEach((m, i) => blip({ f0:hz(m), f1:hz(m - 1), dur:.11, type:'sawtooth', vol:.08, delay:i * .1 })); },
+    bossDefeat(){
+      noise(1.2, .2, 3000, { type:'lowpass', sweep:80 });
+      blip({ f0:220, f1:30, dur:1.1, type:'sawtooth', vol:.12 });
+      [72, 76, 79, 84, 88, 91].forEach((m, i) => blip({ f0:hz(m), dur:.25, type:'square', vol:.08, delay:.6 + i * .08, wet:.35 }));
+    }
   };
 })();
+/* A short buzz on a mistake, on devices that allow it (Android phones and
+   tablets; iPhones do not let websites vibrate). */
+function buzz(pattern){
+  if (save.settings.buzz === false || !navigator.vibrate || !document.body.classList.contains('touch')) return;
+  try { navigator.vibrate(pattern); } catch (e){ /* ignore */ }
+}
 
 /* ============================================================
    7b. NOODLE — the laziest snake in the English language
@@ -3831,6 +4019,7 @@ function bumpHustle(n){
   const before = hustleTier();
   G.hustle = clamp(G.hustle + n * metabolismMult(), 0, 1);
   const after = hustleTier();
+  if (after > before) SFX.tierUp(after);
   G.peakMult = Math.max(G.peakMult || 1, HUSTLE_TIERS[after].mult);
   updateHustleHUD();
 }
@@ -3839,6 +4028,7 @@ function updateHustleHUD(){
   const el = $('#hustle');
   if (!el) return;
   el.setAttribute('data-tier', t);
+  SFX.music.level(t);
   $('#hustle-bar').style.width = Math.round(G.hustle * 100) + '%';
   $('#hustle-mult').textContent = '×' + HUSTLE_TIERS[t].mult;
   $('#hustle-state').textContent = (G.firstStreak >= 3)
@@ -4341,6 +4531,7 @@ function loseLife(reason){
   G.shake = 16;
   G.flash = 1; G.flashColor = '#ff4f63';
   SFX.life();
+  buzz([90, 50, 90]);
   const h = G.snake[0];
   burst(h.x * CELL + CELL / 2, h.y * CELL + CELL / 2, '#ff4f63', 30);
   resetSnake();
@@ -4551,6 +4742,7 @@ function render(t){
   }
 
   drawFog(t);
+  drawFogEyes(t);
 
   G.ripples.forEach(r => {
     ctx.save();
@@ -4565,6 +4757,7 @@ function render(t){
   drawPellets(t);
   drawSnake(t);
   drawFx(t);
+  drawTutorial(t);
 
   G.particles.forEach(p => drawParticle(ctx, p));
   ctx.globalAlpha = 1;
@@ -5885,7 +6078,8 @@ function correctWord(p, px, py){
 
   G.pellets.splice(G.pellets.indexOf(p), 1);
   markTrace(1);
-  SFX.eat(G.streak);
+  SFX.eat(G.streak, p.role, G.progress - 1);
+  if (G.tutorial) floatText(px, py - CELL, pick(['Yes!', 'Nice!', 'Great!']), '#a6ff3d');
   burst(px, py, rgb(ROLE_COLOR[p.role] || [166,255,61]), 16);
   floatText(px, py, '+' + gain + (mult > 1 ? ' \u00d7' + mult : ''), rgb(ROLE_COLOR[p.role] || [166,255,61]));
   ripple(px, py, rgb(ROLE_COLOR[p.role] || [166,255,61]));
@@ -5923,6 +6117,8 @@ function penalty(type, p, px, py){
     markTrace(2);
     SFX.wrong();
   }
+  buzz(70);
+  bossGloat();
 
   markSkill('rebuild', false);
   recordMiss(task);
@@ -5960,6 +6156,7 @@ function sentenceComplete(){
   save.stats.sentences = (save.stats.sentences || 0) + 1;
   markSkill('rebuild', true);
   clearMiss(task);
+  finishTutorial();
   pushFog(3);
   updateHUD();
   SFX.surge();
@@ -6024,6 +6221,7 @@ function gateAnswer(right, p, px, py){
     G.score = Math.max(0, G.score - 80);
     G.shake = 14; G.flash = 1;
     SFX.wrong();
+    buzz(70); bossGloat();
     burst(px, py, '#ff4f63', 22);
     floatText(px, py, '-80', '#ff4f63');
     if (!save.upgrades.trimmer) for (let i = 0; i < 2 && G.snake.length > 3; i++) G.snake.pop();
@@ -6271,6 +6469,7 @@ function submitForge(tapped){
     updateHustleHUD();
     G.shake = 14; G.flash = 1;
     SFX.wrong();
+    buzz(70); bossGloat();
   }
   markSkill('forge', r.exact);
   if (r.exact) clearMiss(task); else recordMiss(task);
@@ -6569,7 +6768,13 @@ function nextTask(){
     maybeDrill(150);
     return;
   }
+  // every finished task hits the boss; a first-try answer is a critical hit
+  if (G.boss && G.taskIdx >= G.warmup) bossHit(!G.taskMissed);
   G.taskIdx++;
+  if (G.boss && G.taskIdx >= G.level.tasks.length && G.boss.hp <= 0){
+    bossDefeat(() => { G.awaiting = false; endLevel(true); });
+    return;
+  }
   if (G.mode === 'gauntlet'){
     G.gaunt++;
     if (G.gaunt % 5 === 0){
@@ -6734,6 +6939,14 @@ function startRun(mode, idx){
   G.trace = [];
   $('#prepbar').classList.remove('show');
   if (level && level.fog){ G.fogL = 2; G.fogR = 2; }
+  // the final mission has a villain; his health is one point per real task
+  G.boss = (mode === 'campaign' && level.boss) ? { max:level.tasks.length - warmup, hp:level.tasks.length - warmup } : null;
+  $('#boss-av').innerHTML = BOSS_SVG;
+  $('#boss-av').className = 'bossav';
+  $('#boss-say').className = 'bosssay';
+  bossUpdateBar();
+  // the very first mission is a guided, show-don't-tell tutorial
+  G.tutorial = mode === 'campaign' && idx === 0 && warmup === 0 && save.settings.hints && !save.coach.tutorial;
   G.skill = {}; G.forgeHinted = false; G.missedThisRun = [];
   G.revived = false;
   G.hustle = 0; G.drowsy = 0; G.napSeconds = 0; G.napped = false; G.radarUntil = 0;
@@ -6774,12 +6987,15 @@ function startRun(mode, idx){
 
   const coachKey = level.coach;
   const token = G.runToken;
-  if (coachKey && !save.coach[coachKey] && save.settings.hints){
-    save.coach[coachKey] = true; persist();
-    showCoach(coachKey, () => { if (G.runToken === token) beginRun(); });
-  } else {
-    beginRun();
-  }
+  const go = () => {
+    if (G.tutorial){ beginRun(); return; }      // the guided round replaces the text coach
+    if (coachKey && !save.coach[coachKey] && save.settings.hints){
+      save.coach[coachKey] = true; persist();
+      showCoach(coachKey, () => { if (G.runToken === token) beginRun(); });
+    } else beginRun();
+  };
+  if (G.boss) showBossIntro(() => { if (G.runToken === token) go(); });
+  else go();
 }
 
 function beginRun(){
@@ -6791,6 +7007,12 @@ function beginRun(){
   G.lastInput = performance.now();
   G.elapsed = 0;
   SFX.start();
+  SFX.music.level(hustleTier());
+  SFX.music.start(G.boss ? 'boss' : 'normal');
+  if (G.boss){
+    const tk = G.runToken;
+    setTimeout(() => { if (G.runToken === tk && !G.over) bossSay(BOSS_LINES.intro[1], 'He will try to defeat you.', 'gloat'); }, 600);
+  }
   enterPrep();
 }
 
@@ -6833,7 +7055,11 @@ function enterPrep(){
   G.prepAt = performance.now();
   G.acc = 0;
   const t = G.task;
-  const c = (G.mode === 'sort' ? PREP_COPY.sortprep : (PREP_COPY[t ? t.kind : 'rebuild'] || PREP_COPY.rebuild))(t);
+  const c = G.tutorial
+    ? { k:'Your first mission',
+        i:'Steer Noodle to the glowing word: <b>' + esc(t.words[0]) + '</b>',
+        t:document.body.classList.contains('touch') ? 'Swipe on the board or tap an arrow.' : 'Use the arrow keys or W A S D.' }
+    : (G.mode === 'sort' ? PREP_COPY.sortprep : (PREP_COPY[t ? t.kind : 'rebuild'] || PREP_COPY.rebuild))(t);
   const warm = G.warmup > 0 && G.taskIdx < G.warmup;
   const el = $('#prepbar');
   el.innerHTML =
@@ -6895,9 +7121,12 @@ function endLevel(success, reason){
     const speedBonus = Math.max(0, Math.round((180 - G.elapsed) / 2));
     bonus = Math.round((60 + speedBonus + stars * 40) * bytesMult());
     G.bytes += bonus;
+    SFX.music.stop();
     SFX.complete();
   } else {
+    SFX.music.stop();
     SFX.fail();
+    if (G.boss) bossSay(BOSS_LINES.lose[0], BOSS_LINES.lose[1], 'gloat');
   }
 
   // cumulative stats that badges read from
@@ -7301,6 +7530,7 @@ function ovFocusables(){
 function showOverlay(html, cls){
   const prev = document.activeElement;
   $('#ovbox').className = 'ovbox ' + (cls || '');
+  SFX.music.duck(true);
   $('#ovbox').innerHTML = html;
   $('#ov').classList.add('show');
   // remember where focus came from so closing the dialog can hand it back
@@ -7317,6 +7547,7 @@ function showOverlay(html, cls){
 }
 function hideOverlay(){
   const wasOpen = $('#ov').classList.contains('show');
+  SFX.music.duck(false);
   $('#ov').classList.remove('show');
   if (!wasOpen) return;
   const back = G.ovPrevFocus;
@@ -7495,7 +7726,7 @@ function clearRunUI(){
   $('#prepbar').classList.remove('show');
   $('#tracebar').classList.remove('show');
   $('#prompt').classList.remove('surge');
-  hideOverlay(); hideTip(); stopSpeaking();
+  hideOverlay(); hideTip(); stopSpeaking(); SFX.music.stop();
   // blank the hidden overlay too, so no stale dialog controls stay in the DOM
   $('#ovbox').innerHTML = '';
 }
@@ -7544,6 +7775,7 @@ function show(name){
       ci.value = classData.custom.map(c => c.p + ' | ' + c.a).join('\n'); }
   if (name === 'key'){ renderAnswerKey(); }
   if (name === 'check'){ renderCheck(); }
+  BG.setActive(name);
   if (name === 'me'){ renderMyResults(); }
   window.scrollTo(0, 0);
 }
@@ -8478,6 +8710,7 @@ function renderTeacher(){
   tog('#t-showall', !!save.settings.showAll, '👁 Show All Menus: ' + (save.settings.showAll ? 'On' : 'Off'));
   tog('#t-power', save.settings.powerups !== false, '✨ Power-Ups: ' + (save.settings.powerups === false ? 'Off' : 'On'));
   tog('#t-typing', save.settings.typing !== false, '⌨ Typed Answers: ' + (save.settings.typing === false ? 'Off (tap to build)' : 'On'));
+  tog('#t-music', save.settings.musicAllowed !== false, '🎵 Music in Class: ' + (save.settings.musicAllowed === false ? 'Off' : 'Allowed'));
   tog('#t-pretest', save.settings.preTest !== 'off', '📝 Placement Check: ' + ({ offer:'Offer', require:'Required', off:'Off' }[save.settings.preTest] || 'Offer'));
   tog('#t-posttest', !!save.settings.postTest, '🏁 Final Check: ' + (save.settings.postTest ? 'Open' : 'Closed'));
   tog('#t-autoplace', save.settings.autoPlace !== false, '🎯 Auto-place from check: ' + (save.settings.autoPlace === false ? 'Off' : 'On'));
@@ -10088,6 +10321,416 @@ function shopAction(act, kind, id){
 }
 
 /* ============================================================
+   LIVING BACKGROUND
+   Behind the menus: a few snakes slither around hunting word tiles from
+   real sentences. One of them is wearing the player's own look from the
+   shop. Turned off during play and tests, frozen in Calm mode, paused when
+   the tab is hidden, and capped at ~30fps so it never costs the game.
+   ============================================================ */
+const BG = (function(){
+  const cv = document.getElementById('bg-cv');
+  if (!cv || !cv.getContext) return { setActive:function(){} };
+  const c = cv.getContext('2d');
+  const SCREENS = { menu:1, help:1, codex:1, story:1, desk:1, contracts:1, trophies:1, me:1, tourney:1 };
+  const WORDS = [
+    ['Jake','actor'], ['broke','verb'], ['the window','recv'], ['Maria','actor'], ['wrote','verb'], ['the letter','recv'],
+    ['the team','actor'], ['won','verb'], ['the game','recv'], ['Priya','actor'], ['designed','verb'], ['the poster','recv'],
+    ['was','scrap'], ['by','scrap'], ['were','scrap'], ['been','scrap']
+  ];
+  let W = 0, H = 0, dpr = 1, on = false, raf = 0, last = 0, acc = 0;
+  let snakes = [], tiles = [], sparks = [];
+  let pointer = { x:0, y:0, at:0 };
+
+  function size(){
+    dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  }
+  function tileColor(role){
+    return role === 'scrap' ? [255,66,200] : (ROLE_COLOR[role] || [62,240,255]);
+  }
+  function newTile(t){
+    const w = WORDS[rnd(WORDS.length)];
+    c.font = '700 15px ' + MONO;
+    const tw = c.measureText(w[0]).width + 22;
+    return { text:w[0], role:w[1], w:tw, h:28,
+      x:40 + Math.random() * Math.max(10, W - 80), y:60 + Math.random() * Math.max(10, H - 120),
+      vx:(Math.random() - .5) * 18, vy:(Math.random() - .5) * 14, born:t, ph:Math.random() * 6 };
+  }
+  function newSnake(look, i){
+    const C = Math.max(14, Math.min(24, Math.min(W, H) / 26));
+    const s = { x:Math.random() * W, y:Math.random() * H, ang:Math.random() * 6.28, speed:70 + i * 12,
+      C:C, n:16 + i * 3, hist:[], look:look, target:null, ph:Math.random() * 6, retarget:0 };
+    for (let k = 0; k < 120; k++) s.hist.push({ x:s.x, y:s.y });
+    return s;
+  }
+  function looks(){
+    // the player's own outfit leads; two showcase skins follow it around
+    const mine = { sk:skinColors(), aura:wornAura(), hat:wornHat() };
+    const pickSkin = id => skinById(id);
+    return [mine, { sk:pickSkin('aurora'), aura:null, hat:null }, { sk:pickSkin(isLight() ? 'tiger' : 'galaxy'), aura:null, hat:null }];
+  }
+  function reset(){
+    size();
+    const t = performance.now();
+    const L = looks();
+    const count = W < 520 ? 2 : 3;
+    snakes = []; for (let i = 0; i < count; i++) snakes.push(newSnake(L[i], i));
+    tiles = []; const nt = W < 520 ? 6 : 10; for (let i = 0; i < nt; i++) tiles.push(newTile(t));
+    sparks = [];
+  }
+  function refreshLooks(){ const L = looks(); snakes.forEach((s, i) => { s.look = L[i] || s.look; }); }
+
+  function steer(s, dt, t){
+    const sec = dt / 1000;
+    // pick something to chase: the pointer if it is close and recent, else a word
+    let tx = null, ty = null;
+    if (t - pointer.at < 2500 && snakes.indexOf(s) === nearestSnake(pointer.x, pointer.y)){ tx = pointer.x; ty = pointer.y; }
+    else {
+      if (!s.target || tiles.indexOf(s.target) < 0 || t > s.retarget){
+        let best = null, bd = 1e9;
+        tiles.forEach(tl => {
+          if (snakes.some(o => o !== s && o.target === tl)) return;
+          const d = Math.hypot(tl.x - s.x, tl.y - s.y);
+          if (d < bd){ bd = d; best = tl; }
+        });
+        s.target = best; s.retarget = t + 3000 + Math.random() * 2000;
+      }
+      if (s.target){ tx = s.target.x; ty = s.target.y; }
+    }
+    let want = s.ang + Math.sin(t / 900 + s.ph) * 0.9;   // a lazy wander
+    if (tx != null) want = Math.atan2(ty - s.y, tx - s.x);
+    // keep off the edges
+    const m = 50;
+    if (s.x < m || s.x > W - m || s.y < m || s.y > H - m) want = Math.atan2(H / 2 - s.y, W / 2 - s.x);
+    let d = want - s.ang;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    s.ang += clamp(d, -2.4 * sec, 2.4 * sec);
+    s.x += Math.cos(s.ang) * s.speed * sec;
+    s.y += Math.sin(s.ang) * s.speed * sec;
+    s.hist.unshift({ x:s.x, y:s.y });
+    if (s.hist.length > 400) s.hist.length = 400;
+    // eat a tile
+    for (let i = tiles.length - 1; i >= 0; i--){
+      const tl = tiles[i];
+      if (t - tl.born < 600) continue;
+      if (Math.abs(tl.x - s.x) < tl.w / 2 + s.C * .3 && Math.abs(tl.y - s.y) < tl.h / 2 + s.C * .3){
+        const col = tileColor(tl.role);
+        for (let k = 0; k < 14; k++){
+          const a = Math.random() * 6.28, sp = 40 + Math.random() * 90;
+          sparks.push({ x:tl.x, y:tl.y, vx:Math.cos(a) * sp, vy:Math.sin(a) * sp, life:1, col:col });
+        }
+        tiles.splice(i, 1);
+        setTimeout(() => { if (tiles.length < (W < 520 ? 6 : 10)) tiles.push(newTile(performance.now())); }, 1200 + Math.random() * 1500);
+        s.target = null;
+      }
+    }
+  }
+  function nearestSnake(x, y){
+    let bi = -1, bd = 340;
+    snakes.forEach((s, i) => { const d = Math.hypot(s.x - x, s.y - y); if (d < bd){ bd = d; bi = i; } });
+    return bi;
+  }
+  function bodyPoints(s, t){
+    // walk back along the path the head took, one segment every `gap` pixels
+    const gap = s.C * 0.62, P = [{ x:s.hist[0].x, y:s.hist[0].y }];
+    let need = gap, k = 1, prev = s.hist[0];
+    while (P.length < s.n && k < s.hist.length){
+      const h = s.hist[k], seg = Math.hypot(h.x - prev.x, h.y - prev.y);
+      if (seg >= need){
+        const f = need / seg;
+        const p = { x:prev.x + (h.x - prev.x) * f, y:prev.y + (h.y - prev.y) * f };
+        P.push(p); prev = p; need = gap;
+      } else { need -= seg; prev = h; k++; }
+    }
+    while (P.length < s.n) P.push({ x:P[P.length - 1].x, y:P[P.length - 1].y });
+    // the slither: a travelling side-to-side wave that grows toward the tail
+    if (motionOK()) for (let i = 1; i < P.length; i++){
+      const a = P[i - 1], b = P[i];
+      let dx = a.x - b.x, dy = a.y - b.y; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+      const off = Math.sin(i * 0.55 - t / 160 + s.ph) * s.C * 0.32 * Math.min(1, i / 5);
+      b.x += -dy * off; b.y += dx * off;
+    }
+    return P;
+  }
+  function draw(t){
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, W, H);
+    const ink = isLight();
+    // word tiles
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = '700 15px ' + MONO;
+    tiles.forEach(tl => {
+      const col = tileColor(tl.role);
+      const fade = Math.min(1, (t - tl.born) / 600);
+      const y = tl.y + Math.sin(t / 900 + tl.ph) * 4;
+      c.globalAlpha = (ink ? .55 : .5) * fade;
+      c.fillStyle = ink ? 'rgba(255,253,247,.9)' : 'rgba(8,13,30,.85)';
+      rr(c, tl.x - tl.w / 2, y - tl.h / 2, tl.w, tl.h, 8); c.fill();
+      c.strokeStyle = rgb(col); c.lineWidth = 1.5;
+      rr(c, tl.x - tl.w / 2, y - tl.h / 2, tl.w, tl.h, 8); c.stroke();
+      c.fillStyle = ink ? rgb(lerpArr(col, [0,0,0], .45)) : rgb(lerpArr(col, [255,255,255], .4));
+      c.fillText(tl.text, tl.x, y + 1);
+    });
+    // sparks from eaten words
+    sparks.forEach(p => {
+      c.globalAlpha = Math.max(0, p.life) * .8;
+      c.fillStyle = rgb(p.col);
+      c.fillRect(p.x - 1.5, p.y - 1.5, 3, 3);
+    });
+    // snakes
+    c.globalAlpha = ink ? .8 : .75;
+    snakes.forEach(s => {
+      const P = bodyPoints(s, t);
+      const cols = P.map((_, i) => segColor(i, P.length, t, s.look.sk, false, null, null));
+      const ang = Math.atan2(P[0].y - P[1].y, P[0].x - P[1].x);
+      paintNoodle(c, P, { C:s.C, sk:s.look.sk, cols:cols, ang:ang, t:t, drowsy:0, stunned:false, evo:0,
+        hat:s.look.hat, aura:s.look.aura, ink:ink });
+    });
+    c.globalAlpha = 1;
+  }
+  function frame(t){
+    raf = 0;
+    if (!on) return;
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min(80, t - (last || t));
+    last = t;
+    acc += dt;
+    if (acc < 32) return;            // ~30fps is plenty for a background
+    const step = acc; acc = 0;
+    if (motionOK()){
+      snakes.forEach(s => steer(s, step, t));
+      tiles.forEach(tl => {
+        tl.x += tl.vx * step / 1000; tl.y += tl.vy * step / 1000;
+        if (tl.x < tl.w / 2 + 10 || tl.x > W - tl.w / 2 - 10) tl.vx *= -1;
+        if (tl.y < 40 || tl.y > H - 30) tl.vy *= -1;
+      });
+      for (let i = sparks.length - 1; i >= 0; i--){
+        const p = sparks[i]; p.x += p.vx * step / 1000; p.y += p.vy * step / 1000; p.life -= step / 700;
+        if (p.life <= 0) sparks.splice(i, 1);
+      }
+    }
+    draw(t);
+    if (!motionOK()){ on = false; cancelAnimationFrame(raf); raf = 0; }   // calm: one still frame
+  }
+  function setActive(name){
+    const want = !!SCREENS[name] && !document.hidden;
+    document.body.classList.toggle('bg-live', !!SCREENS[name]);
+    if (want){
+      if (!snakes.length) reset(); else refreshLooks();
+      if (!on){ on = true; last = 0; if (!raf) raf = requestAnimationFrame(frame); }
+    } else { on = false; }
+  }
+  window.addEventListener('resize', () => { if (snakes.length){ size(); snakes.forEach(s => { s.x = clamp(s.x, 0, W); s.y = clamp(s.y, 0, H); }); } });
+  window.addEventListener('pointermove', e => { pointer = { x:e.clientX, y:e.clientY, at:performance.now() }; }, { passive:true });
+  window.addEventListener('pointerdown', e => { pointer = { x:e.clientX, y:e.clientY, at:performance.now() }; }, { passive:true });
+  document.addEventListener('visibilitychange', () => {
+    const scr = document.querySelector('.screen.active');
+    setActive(scr ? scr.id.replace('scr-', '') : '');
+  });
+  return { setActive:setActive, refreshLooks:refreshLooks };
+})();
+
+/* ============================================================
+   BOSS: Lord Mistakes-Were-Made, Master of the Missing Agent
+   He lives in the fog on the final mission. Every finished task lands a
+   hit; a first-try answer is a critical hit. He talks only in the passive
+   voice, and every line he says is corrected into the active voice.
+   ============================================================ */
+const BOSS_NAME = 'Lord Mistakes-Were-Made';
+const BOSS_SVG = '<svg viewBox="0 0 64 58" aria-hidden="true">' +
+  '<path d="M9 48C1 48 1 33 11 32C9 20 25 15 30 24C34 12 53 14 51 27C63 25 65 46 53 48Z" fill="#7a68d8"/>' +
+  '<path d="M14 45C9 45 9 38 15 37C15 30 25 28 28 33C32 26 46 27 45 34C53 33 55 44 49 45Z" fill="#9887ee" opacity=".7"/>' +
+  '<rect x="22" y="3" width="20" height="15" rx="2" fill="#151027"/><rect x="15" y="16" width="34" height="4.5" rx="2.2" fill="#151027"/>' +
+  '<rect x="22" y="12.5" width="20" height="3" fill="#ff42c8"/>' +
+  '<g class="beyes"><circle cx="25" cy="34" r="5" fill="#fff"/><circle cx="40" cy="34" r="5" fill="#fff"/>' +
+  '<circle class="pupil" cx="26.5" cy="35" r="2.4" fill="#170f2e"/><circle class="pupil" cx="41.5" cy="35" r="2.4" fill="#170f2e"/></g>' +
+  '<circle cx="40" cy="34" r="7.2" fill="none" stroke="#ffcb3d" stroke-width="1.6"/><path d="M46.5 37L50 49" stroke="#ffcb3d" stroke-width="1"/>' +
+  '<path d="M24 43Q32.5 38 41 43Q32.5 40.5 24 43Z" fill="#151027"/></svg>';
+const BOSS_LINES = {
+  intro: ['Mistakes will be made. By whom? That will not be said.', 'You will be defeated.', 'I am never defeated by anyone.'],
+  hurt:  [['Damage was taken!', 'You damaged him!'], ['The fog was pushed back!', 'You pushed back the fog!'],
+          ['My monocle was cracked!', 'You cracked his monocle!'], ['A sentence was fixed!', 'You fixed a sentence!'],
+          ['My hat was knocked off!', 'You knocked off his hat!']],
+  gloat: [['A wrong word was eaten!', 'You ate a wrong word.'], ['Points were lost!', 'You lost points.'],
+          ['The agent was hidden!', 'He hid the agent.'], ['Mistakes were made!', 'You made a mistake. It happens.']],
+  win:   ['I was... defeated?', 'YOU defeated him.'],
+  lose:  ['The grid was taken. By whom? Never mind.', 'He took the grid. For now.']
+};
+let bossSayTimer = 0;
+function bossSay(passive, active, mood){
+  const el = $('#boss-say');
+  if (!el) return;
+  el.innerHTML = '<span class="bp">&ldquo;' + esc(passive) + '&rdquo;</span>' +
+    (active ? '<span class="ba">Active: ' + esc(active) + '</span>' : '');
+  el.className = 'bosssay show ' + (mood || '');
+  clearTimeout(bossSayTimer);
+  bossSayTimer = setTimeout(() => { el.className = 'bosssay'; }, 4200);
+}
+function bossUpdateBar(){
+  const b = G.boss;
+  $('#bossbar').hidden = !b;
+  if (!b) return;
+  $('#boss-hp').style.width = Math.max(0, b.hp / b.max * 100) + '%';
+  $('#boss-hp-text').textContent = b.hp + ' / ' + b.max;
+}
+function bossHit(crit){
+  const b = G.boss;
+  if (!b || b.hp <= 0) return;
+  b.hp--;
+  bossUpdateBar();
+  const av = $('#boss-av');
+  av.classList.remove('hit'); void av.offsetWidth; av.classList.add('hit');
+  const line = pick(BOSS_LINES.hurt);
+  bossSay(line[0], line[1], 'hurt');
+  SFX.bossHit(crit);
+  buzz(30);
+  const x = gridW() / 2, y = CELL * 2;
+  floatText(x, y + CELL, crit ? 'CRITICAL HIT!' : 'HIT!', crit ? '#ffcb3d' : '#ff42c8');
+  burst(x, y, crit ? '#ffcb3d' : '#ff42c8', crit ? 34 : 20);
+  G.shake = Math.max(G.shake, crit ? 12 : 7);
+}
+let bossGloatAt = 0;
+function bossGloat(){
+  if (!G.boss || performance.now() - bossGloatAt < 3500) return;
+  bossGloatAt = performance.now();
+  const line = pick(BOSS_LINES.gloat);
+  bossSay(line[0], line[1], 'gloat');
+  const av = $('#boss-av');
+  av.classList.remove('laugh'); void av.offsetWidth; av.classList.add('laugh');
+  SFX.bossLaugh();
+}
+function bossDefeat(then){
+  const av = $('#boss-av');
+  av.classList.add('defeated');
+  bossSay(BOSS_LINES.win[0], BOSS_LINES.win[1], 'win');
+  SFX.music.stop();
+  SFX.bossDefeat();
+  buzz([40, 40, 80]);
+  G.awaiting = true;
+  G.shake = 18; G.flash = 1; G.flashColor = '#ffffff';
+  G.fogL = 0; G.fogR = 0;
+  for (let k = 0; k < 4; k++) setTimeout(() => confettiBurst(gridW() * (0.2 + Math.random() * 0.6), gridH() * (0.3 + Math.random() * 0.4), 40), k * 220);
+  floatText(gridW() / 2, gridH() / 2, 'BOSS DEFEATED!', '#a6ff3d');
+  const token = G.runToken;
+  setTimeout(() => { if (G.runToken === token) then(); }, 2300);
+}
+function showBossIntro(done){
+  SFX.bossRoar();
+  showOverlay(
+    '<div class="bossintro"><div class="kicker" style="color:var(--mag)">&#9888; Boss incoming</div>' +
+    '<div class="bigboss">' + BOSS_SVG + '</div>' +
+    '<h2>' + BOSS_NAME + '</h2>' +
+    '<p class="tiny" style="color:var(--dim);margin-top:-2px">Master of the Missing Agent</p>' +
+    '<p class="bossquote">&ldquo;' + esc(BOSS_LINES.intro[0]) + '&rdquo;</p>' +
+    '<p>He hides in the fog and never says who did anything. Every sentence you finish lands a hit &mdash; get it right on the first try for a <b style="color:var(--amber)">critical hit</b>.</p>' +
+    '<div class="ovbtns" style="justify-content:center"><button class="btn primary" id="boss-go">&#9876; Fight!</button></div></div>', 'mag');
+  $('#boss-go').onclick = () => { SFX.unlock(); SFX.bossHit(true); hideOverlay(); done(); };
+}
+/* the fog itself watches you: a pair of eyes in each bank of fog */
+function drawFogEyes(t){
+  if (!G.boss || G.boss.hp <= 0) return;
+  const h = G.snake[0];
+  const hx = h ? h.x * CELL + CELL / 2 : gridW() / 2, hy = h ? h.y * CELL + CELL / 2 : gridH() / 2;
+  [[G.fogL, 0.32, 1], [G.fogR, 0.66, -1]].forEach((f, k) => {
+    if (f[0] < 1) return;
+    const cx = f[2] > 0 ? f[0] * CELL / 2 : gridW() - f[0] * CELL / 2;
+    const cy = gridH() * f[1] + Math.sin(t / 900 + k * 2) * CELL * 0.6;
+    const r = Math.min(CELL * 0.42, f[0] * CELL * 0.22);
+    const blink = (t + k * 1700) % 4300 < 140;
+    [-1, 1].forEach(side => {
+      const ex = cx + side * r * 1.25;
+      ctx.save();
+      ctx.shadowColor = '#c9b8ff'; ctx.shadowBlur = CELL * 0.6;
+      ctx.fillStyle = 'rgba(240,235,255,.92)';
+      ctx.beginPath(); ctx.ellipse(ex, cy, r, blink ? r * 0.12 : r * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      if (!blink){
+        const a = Math.atan2(hy - cy, hx - ex);
+        ctx.fillStyle = '#1b1238';
+        ctx.beginPath(); ctx.arc(ex + Math.cos(a) * r * 0.38, cy + Math.sin(a) * r * 0.3, r * 0.42, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    });
+  });
+}
+
+/* ============================================================
+   GUIDED FIRST MISSION
+   The very first round shows instead of tells: the board dims except for
+   the word to eat next, a label says what job it does, and a dotted line
+   runs from Noodle's head to it. Help this direct only exists here.
+   ============================================================ */
+const TUT_ASK = { actor:'Who did it?', verb:'What did they do?', recv:'To what?' };
+function drawTutorial(t){
+  if (!G.tutorial || !G.task || G.task.kind !== 'rebuild' || G.over) return;
+  const p = G.pellets.find(q => q.type === 'word' && q.idx === G.progress);
+  const head = G.snake[0];
+  if (!p || !head) return;
+  const r = pelletRect(p);
+  const tx = r.x + r.w / 2, ty = r.y + r.h / 2;
+  const hp = snakeDrawPos()[0];
+  const W = gridW(), H = gridH();
+  const pulse = 0.5 + 0.5 * Math.sin(t / 220);
+  ctx.save();
+  // dim the board, leaving windows around the word and around Noodle
+  ctx.fillStyle = BOARD_INK ? 'rgba(40,36,30,.32)' : 'rgba(0,0,8,.5)';
+  ctx.beginPath();
+  ctx.rect(0, 0, W, H);
+  const pad = CELL * 0.45;
+  // the window around the word is added to the same path (rr() would start a new one)
+  const bx = r.x - pad, by = r.y - pad, bw = r.w + pad * 2, bh = r.h + pad * 2, br = CELL * 0.5;
+  ctx.moveTo(bx + br, by);
+  ctx.arcTo(bx + bw, by, bx + bw, by + bh, br); ctx.arcTo(bx + bw, by + bh, bx, by + bh, br);
+  ctx.arcTo(bx, by + bh, bx, by, br); ctx.arcTo(bx, by, bx + bw, by, br); ctx.closePath();
+  ctx.moveTo(hp.x + CELL * 1.3, hp.y);
+  ctx.arc(hp.x, hp.y, CELL * 1.3, 0, Math.PI * 2);
+  ctx.fill('evenodd');
+  // dotted guide line from the head to the word
+  ctx.setLineDash([CELL * 0.25, CELL * 0.25]);
+  ctx.lineDashOffset = -t / 40;
+  ctx.strokeStyle = 'rgba(166,255,61,.85)'; ctx.lineWidth = Math.max(2, CELL * 0.1);
+  ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.lineTo(tx, ty); ctx.stroke();
+  ctx.setLineDash([]);
+  // pulsing ring on the word
+  ctx.strokeStyle = 'rgba(166,255,61,' + (0.5 + pulse * 0.5) + ')'; ctx.lineWidth = 3;
+  rr(ctx, r.x - pad * (0.6 + pulse * 0.4), r.y - pad * (0.6 + pulse * 0.4), r.w + pad * (1.2 + pulse * 0.8), r.h + pad * (1.2 + pulse * 0.8), CELL * 0.4);
+  ctx.stroke();
+  // label: what job this word does
+  const ask = (G.progress + 1) + '. ' + (TUT_ASK[p.role] || 'Next word') + '  →  ' + plain(p.text);
+  ctx.font = '800 ' + clamp(Math.round(CELL * 0.62), 13, 18) + 'px ' + MONO;
+  const lw = ctx.measureText(ask).width + CELL;
+  const lh = clamp(CELL * 1.1, 26, 34);
+  let lx = clamp(tx - lw / 2, 4, W - lw - 4);
+  let ly = r.y - pad - lh - 6;
+  if (ly < 4) ly = r.y + r.h + pad + 6;
+  ctx.fillStyle = '#a6ff3d';
+  rr(ctx, lx, ly, lw, lh, lh / 2); ctx.fill();
+  ctx.fillStyle = '#0b1a02'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(ask, lx + lw / 2, ly + lh / 2 + 1);
+  // before the first move: show how to steer
+  if (G.prep && motionOK()){
+    const k = (t % 1400) / 1400;
+    const touch = document.body.classList.contains('touch');
+    const dx = tx - hp.x, dy = ty - hp.y, d = Math.hypot(dx, dy) || 1;
+    const sx = hp.x + dx / d * CELL * 1.6 * k, sy = hp.y + dy / d * CELL * 1.6 * k + CELL * 0.9;
+    ctx.globalAlpha = 1 - k * 0.7;
+    ctx.font = Math.round(CELL * 1.2) + 'px ' + MONO;
+    ctx.fillText(touch ? '👆' : '⌨️', touch ? sx : hp.x, touch ? sy : hp.y + CELL * 1.6);
+  }
+  ctx.restore();
+}
+function finishTutorial(){
+  if (!G.tutorial) return;
+  G.tutorial = false;
+  save.coach.tutorial = true;
+  save.coach.rebuild = true;
+  persist();
+  toast('codex', 'Tutorial complete', 'You know the move!', 'Find who did it, put them first, fix the verb. That is the whole game.');
+}
+
+/* ============================================================
    18. INPUT
    ============================================================ */
 const KEYMAP = {
@@ -10271,6 +10914,8 @@ function applyAccess(){
   set('#a-calm', st.calm, '🍃 Calm mode');
   set('#a-noodle', st.noodle !== false, '💬 Noodle’s comments');
   set('#a-read', st.readAloud, '🔈 Read sentences aloud');
+  set('#a-buzz', st.buzz !== false, '📳 Buzz on mistakes');
+  const bz = $('#a-buzz'); if (bz) bz.hidden = !navigator.vibrate;
   const ar = $('#a-read'); if (ar) ar.hidden = !CAN_SPEAK;
   renderBgRow();
   // the canvas role colours must follow the CSS variables
@@ -10288,12 +10933,21 @@ function applyAccess(){
   ROLE_COLOR.recv  = parse(cs.getPropertyValue('--recv'));
   sceneKey = '';
   BOARD_INK = isLight() ? [28,26,22] : null;
+  // calm mode or a new background colour: redraw the living background
+  if (typeof BG !== 'undefined'){ const scr = $('.screen.active'); if (scr) BG.setActive(scr.id.replace('scr-', '')); }
 }
 function refreshMenuToggles(){
   $('#btn-sound').textContent = (save.settings.sound ? '🔊' : '🔇') + ' Sound: ' + (save.settings.sound ? 'On' : 'Off');
   $('#btn-sound').classList.toggle('on', save.settings.sound);
   $('#btn-walls').textContent = (save.settings.wrap ? '∞' : '▣') + ' Walls: ' + (save.settings.wrap ? 'Wrap' : 'Solid');
   $('#btn-walls').classList.toggle('on', !save.settings.wrap);
+  const mb = $('#btn-music');
+  if (mb){
+    const allowed = save.settings.musicAllowed !== false;
+    mb.hidden = !allowed;
+    mb.textContent = '🎵 Music: ' + (save.settings.music !== false ? 'On' : 'Off');
+    mb.classList.toggle('on', save.settings.music !== false);
+  }
 }
 function storageCheck(){
   try {
@@ -10366,6 +11020,11 @@ function boot(){
     save.settings.preTest = order[(order.indexOf(save.settings.preTest) + 1) % order.length];
     persist(); SFX.click(); renderTeacher();
   };
+  $('#t-music').onclick = () => {
+    save.settings.musicAllowed = save.settings.musicAllowed === false;
+    persist(); SFX.click(); renderTeacher(); refreshMenuToggles();
+    if (save.settings.musicAllowed === false) SFX.music.stop();
+  };
   $('#t-posttest').onclick = () => { save.settings.postTest = !save.settings.postTest; persist(); SFX.click(); renderTeacher(); };
   $('#t-autoplace').onclick = () => { save.settings.autoPlace = save.settings.autoPlace === false; persist(); SFX.click(); renderTeacher(); };
   $('#snap-csv').onclick = snapshotCSV;
@@ -10392,7 +11051,17 @@ function boot(){
     save.tourney = { players:names, scores:[], idx:0, active:true, seed:'tourney|' + Date.now() + '|' + save.band };
     persist(); SFX.buy(); renderTourney();
   };
-  $('#btn-sound').onclick = () => { save.settings.sound = !save.settings.sound; persist(); refreshMenuToggles(); if (save.settings.sound) SFX.click(); };
+  $('#btn-sound').onclick = () => { save.settings.sound = !save.settings.sound; persist(); refreshMenuToggles(); if (save.settings.sound) SFX.click(); else SFX.music.stop(); };
+  $('#btn-music').onclick = () => {
+    save.settings.music = save.settings.music === false;
+    persist(); refreshMenuToggles(); SFX.unlock(); SFX.click();
+    if (save.settings.music === false) SFX.music.stop();
+  };
+  $('#a-buzz').onclick = () => {
+    save.settings.buzz = save.settings.buzz === false;
+    persist(); applyAccess(); SFX.click();
+    if (save.settings.buzz) buzz(60);
+  };
   $('#btn-walls').onclick = () => { save.settings.wrap = !save.settings.wrap; persist(); refreshMenuToggles(); SFX.click(); };
   $('#btn-restart').onclick = () => {
     const nm = $('#student-name').value.trim() || save.student;
