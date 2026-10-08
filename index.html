@@ -1067,10 +1067,33 @@ body[data-bg="paper"] .scorecard{background:#f4faec}
 .tries{font-size:10px;color:var(--dimmer);font-weight:400}
 .ckmenu .ckdone{font-size:12px;color:var(--dim);border:1px solid var(--line);padding:6px 10px}
 .ckmenu .ckdone b{color:var(--lime)}
-#send-box textarea{font-size:12px;margin-top:6px}
 body[data-bg="paper"] .cksent{background:#fffdf7}
+/* ---------- word that flies from the board into the sentence ---------- */
+.flyword{position:fixed;left:0;top:0;z-index:50;pointer-events:none;font-family:var(--sans);font-weight:700;
+  font-size:clamp(16px,2.8vw,20px);padding:2px 10px;border-radius:8px;border:2px solid currentColor;
+  background:rgba(8,13,30,.95);box-shadow:0 6px 22px rgba(0,0,0,.5),0 0 18px currentColor;white-space:nowrap}
+.flyword.r-actor{color:var(--actor)} .flyword.r-verb{color:var(--verb)} .flyword.r-recv{color:var(--recv)}
+body[data-bg="paper"] .flyword{background:#fffdf7}
+.build .w.landed{display:inline-block;animation:landpop .38s cubic-bezier(.2,1.6,.4,1)}
+@keyframes landpop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+/* ---------- grades ---------- */
+.gradechip{display:inline-flex;align-items:baseline;gap:4px;font-family:var(--mono);font-weight:900;font-size:15px;
+  padding:2px 8px;border-radius:var(--r-xs,8px);border:1px solid currentColor;white-space:nowrap}
+.gradechip small{font-family:var(--sans);font-weight:600;font-size:11px;opacity:.8}
+.gradechip.big{font-size:44px;padding:6px 18px;border-width:2px}
+.gradechip.big small{font-size:16px}
+.gradechip.g-a{color:var(--lime)} .gradechip.g-b{color:var(--cyan)} .gradechip.g-c{color:var(--amber)}
+.gradechip.g-d{color:#ff9a4f} .gradechip.g-f{color:var(--red)} .gradechip.none{color:var(--dimmer);font-family:var(--sans);font-weight:600}
+.gradechip.none.big{font-size:18px}
+.gradebox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px;padding:12px 14px;
+  border:1px solid var(--edge,var(--line));border-radius:var(--r-sm,11px);background:rgba(0,0,0,.18)}
+.gradebox .tiny{flex:1 1 220px;font-size:13px}
+.trend{font-size:11px;font-weight:700}
+.trend.up{color:var(--lime)} .trend.dn{color:var(--red)}
+.gbtable tr.nc td{color:var(--dimmer)}
+body[data-bg="paper"] .gradebox{background:#fffdf7}
 /* ---------- class snapshot ---------- */
-#snap-table{min-width:1100px}
+#snap-table{min-width:1180px}
 th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{color:var(--text)}
 .linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--cyan);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
@@ -1365,6 +1388,7 @@ body.calm .bigstart{animation:none}
       <button class="btn sm" data-go="story">Story</button>
       <button class="btn sm" data-go="contracts">Contracts</button>
       <button class="btn sm" data-go="trophies">Trophies</button>
+      <button class="btn sm" data-go="me">My&nbsp;Results</button>
       <button class="btn sm" data-go="help">How&nbsp;to&nbsp;Play</button>
       <button class="btn sm ghost" data-go="teacher">Teacher&nbsp;Tools</button>
     </nav>
@@ -1410,7 +1434,6 @@ body.calm .bigstart{animation:none}
     </div>
 
     <div class="panel tight ckmenu" id="panel-checks" hidden></div>
-    <div class="panel" id="send-box" hidden></div>
 
     <div class="panel movecard" id="movecard"></div>
 
@@ -1791,6 +1814,11 @@ body.calm .bigstart{animation:none}
     </div>
   </section>
 
+  <!-- ============ MY RESULTS (student) ============ -->
+  <section id="scr-me" class="screen">
+    <div class="panel ckpanel" id="me-body"></div>
+  </section>
+
   <!-- ============ PLACEMENT / FINAL CHECK ============ -->
   <section id="scr-check" class="screen">
     <div class="panel ckpanel" id="check-body"></div>
@@ -1798,18 +1826,7 @@ body.calm .bigstart{animation:none}
 
   <!-- ============ TEACHER ============ -->
   <section id="scr-teacher" class="screen">
-    <div class="panel gate" id="teacher-gate">
-      <h2>Teacher Tools</h2>
-      <p class="muted">Quick check so the grid stays student-proof.</p>
-      <div class="q" id="gate-q">7 &times; 8 = ?</div>
-      <div class="namerow">
-        <input type="number" id="gate-a" placeholder="Answer" style="width:130px;text-align:center">
-        <button class="btn primary" id="gate-go">Unlock</button>
-      </div>
-      <p class="tiny" id="gate-msg" style="color:var(--red);height:16px;margin-top:8px"></p>
-    </div>
-
-    <div id="teacher-body" hidden>
+    <div id="teacher-body">
       <div class="panel" id="snap-panel">
         <div class="rowsplit" style="margin-bottom:6px">
           <h2 style="margin:0">Class Snapshot</h2>
@@ -1836,13 +1853,6 @@ body.calm .bigstart{animation:none}
         <h3 style="margin-top:16px">Skill grid</h3>
         <p class="muted tiny" style="margin-top:-4px">In-game accuracy by skill, plus both checks. Green 85%+, amber 70&ndash;84%, red under 70%. Hover a cell for the count.</p>
         <div class="tbl-wrap"><table id="snap-grid" class="hmtable"></table></div>
-        <h3 style="margin-top:16px">Add results from other devices</h3>
-        <p class="muted tiny" style="margin-top:-4px">On 1:1 Chromebooks each student&rsquo;s results stay on their own device. Have students tap
-        <b>Send results to my teacher</b> and paste the text into a Google Classroom private comment or a Google Form. Then paste
-        everything they sent below &mdash; one student or the whole class at once. Extra text around the codes is ignored.</p>
-        <textarea id="snap-import" class="fldarea" rows="4" spellcheck="false" placeholder="Paste student results here (each contains a code starting with PS1:)"></textarea>
-        <div class="toggles" style="margin-top:8px"><button class="btn sm primary" id="snap-import-go">&#11014; Import results</button>
-          <span class="tiny" id="snap-import-msg" style="color:var(--lime)"></span></div>
       </div>
 
       <div class="panel">
@@ -1951,6 +1961,12 @@ body.calm .bigstart{animation:none}
         9&ndash;11 &rarr; T3, 12&ndash;13 &rarr; T4, 14&ndash;15 &rarr; T5. Speed is suggested from accuracy and the median time per
         question: under 50% or 16+ seconds &rarr; Slow; 80%+ in 8 seconds or less &rarr; Fast; otherwise Medium. With
         <b>Auto-place</b> on, both are applied automatically unless Lock Tier or Lock Speed is on.</p>
+        <p class="muted tiny" style="margin:0 0 6px"><b style="color:var(--cyan)">Letter grade</b> works like a gradebook. Every
+        finished mission is an assignment, scored on the questions the student answered in it (missions quit after fewer than three
+        questions are skipped). Every Final Check attempt is an assignment too. Grade = 60% practice average + 40% Final Check
+        average (100% practice until a Final Check exists). The Placement Check is a diagnostic pre-test: it is listed in the
+        gradebook but never graded. Scale: A 93+, A&minus; 90, B+ 87, B 83, B&minus; 80, C+ 77, C 73, C&minus; 70, D+ 67, D 63,
+        D&minus; 60, F below 60. The date filter above the Snapshot turns it into a weekly or monthly grade.</p>
         <p class="muted tiny" style="margin:0 0 6px"><b style="color:var(--cyan)">Final Check</b> is a parallel post-test: new
         sentences, the same skill in the same position, so growth is a fair comparison. It stays closed until you open it.
         Students can take either check as many times as they like, and every attempt starts fresh from question 1. Pressing
@@ -3852,10 +3868,10 @@ function layout(){
   cv.style.height = h + 'px';
 
   const big = save && save.settings && save.settings.bigtext ? 1.15 : 1;   // Larger text reaches the board too
-  const fs = clamp(Math.round(CELL * 0.55 * big), 8, 18);
+  const fs = clamp(Math.round(CELL * 0.6 * big), 9, 19);
   PELLET_FONT = '700 ' + fs + 'px ' + MONO;
   GATE_FONT   = '800 ' + fs + 'px ' + MONO;
-  LABEL_FONT  = '700 ' + clamp(Math.round(CELL * 0.40), 7, 11) + 'px ' + MONO;
+  LABEL_FONT  = '700 ' + clamp(Math.round(CELL * 0.48 * big), 10, 14) + 'px ' + MONO;
   FLOAT_FONT  = '800 ' + clamp(Math.round(CELL * 0.62), 10, 18) + 'px ' + MONO;
 
   if (dimsChanged){
@@ -3924,7 +3940,7 @@ const G = {
   correct:0, errors:0, errTypes:{}, drills:0, livesLost:0, trapHits:0,
 
   shake:0, flash:0, flashColor:'#ff4f63', surge:0, surgeY:0,
-  particles:[], floats:[], ripples:[], motes:[],
+  particles:[], floats:[], ripples:[], motes:[], fx:[], confetti:[], prevPos:null, happyUntil:0,
   startTs:0, elapsed:0, limit:0, mode:'campaign', runToken:0,
   hustle:0, drowsy:0, lastInput:0, napSeconds:0, napped:false, revived:false, shields:0, radarUntil:0,
   fogL:0, fogR:0, fogAcc:0, fogHits:0, freeBites:0, scene:'void', prep:false, warmup:0,
@@ -4249,6 +4265,7 @@ function resetSnake(){
   G.dir = { x:1, y:0 };
   G.dirQueue = [];
   G.grow = 0; G.growRole = null;
+  G.prevPos = null;
 }
 function setDir(dx, dy){
   if (!G.active || G.paused || G.awaiting) return;
@@ -4292,6 +4309,7 @@ function step(){
 
   // new head inherits the role of the word currently being digested
   if (G.trace.length < 1500) G.trace.push({ x:hx, y:hy, e:0 });
+  G.prevPos = G.snake.map(sg => ({ x:sg.x, y:sg.y }));   // where each segment glides from
   G.snake.unshift({ x:hx, y:hy, role: G.grow > 0 ? G.growRole : null, word:null });
   if (!save.settings.calm) trailPuff();   // calm mode keeps the board still
   if (G.grow > 0 && G.snake.length < snakeCap()){
@@ -4441,6 +4459,7 @@ function loop(t){
     const fl = G.floats[i]; fl.y -= .55; fl.life -= .014;
     if (fl.life <= 0) G.floats.splice(i, 1);
   }
+  stepConfetti(dt);
   for (let i = G.ripples.length - 1; i >= 0; i--){
     const r = G.ripples[i]; r.life -= .03;
     if (r.life <= 0) G.ripples.splice(i, 1);
@@ -4487,6 +4506,7 @@ function render(t){
 
   if (G.shake > 0) ctx.setTransform(DPR, 0, 0, DPR, (Math.random() - .5) * G.shake * DPR, (Math.random() - .5) * G.shake * DPR);
 
+  drawChecker();
   drawScene();
 
   // drifting data motes, behind the grid
@@ -4498,7 +4518,7 @@ function render(t){
   ctx.globalAlpha = 1;
 
   ctx.lineWidth = 1;
-  ctx.strokeStyle = BOARD_INK ? rgba(G.theme.grid, .16) : rgba(G.theme.grid, .055);
+  ctx.strokeStyle = BOARD_INK ? rgba(G.theme.grid, .16) : rgba(G.theme.grid, .075);
   ctx.beginPath();
   for (let x = 0; x <= COLS; x++){ ctx.moveTo(x * CELL + .5, 0); ctx.lineTo(x * CELL + .5, H); }
   for (let y = 0; y <= ROWS; y++){ ctx.moveTo(0, y * CELL + .5); ctx.lineTo(W, y * CELL + .5); }
@@ -4541,6 +4561,7 @@ function render(t){
   drawPower(t);
   drawPellets(t);
   drawSnake(t);
+  drawFx(t);
 
   G.particles.forEach(p => {
     ctx.globalAlpha = Math.max(0, p.life);
@@ -4898,12 +4919,30 @@ function buildScene(name){
     }
   }
 }
+/* a faint two-tone checkerboard, like a classic snake board: it makes the
+   grid readable at a glance without drawing hard lines everywhere */
+let checkerKey = '', checkerPat = null;
+function drawChecker(){
+  const key = CELL + ':' + (BOARD_INK ? 'ink' : 'dark');
+  if (key !== checkerKey){
+    checkerKey = key;
+    const c = document.createElement('canvas');
+    c.width = c.height = CELL * 2;
+    const g = c.getContext('2d');
+    g.fillStyle = BOARD_INK ? 'rgba(0,0,0,0.028)' : 'rgba(255,255,255,0.022)';
+    g.fillRect(0, 0, CELL, CELL); g.fillRect(CELL, CELL, CELL, CELL);
+    checkerPat = ctx.createPattern(c, 'repeat');
+  }
+  if (!checkerPat) return;
+  ctx.fillStyle = checkerPat;
+  ctx.fillRect(0, 0, gridW(), gridH());
+}
 function drawScene(){
   const name = G.scene || 'void';
   buildScene(name);
   if (!sceneCv) return;
   ctx.save();
-  ctx.globalAlpha = BOARD_INK ? (name === 'void' ? 0.14 : 0.09) : (name === 'void' ? 0.22 : 0.11);
+  ctx.globalAlpha = BOARD_INK ? (name === 'void' ? 0.14 : 0.1) : (name === 'void' ? 0.3 : 0.18);
   ctx.drawImage(sceneCv, 0, 0);
   ctx.restore();
 }
@@ -4976,8 +5015,24 @@ function drawPellets(t){
     }
     const isTarget = radarOn && p.type === 'word' && p.idx === G.progress;
     const hidden = pelletHidden(p);
+    const now = performance.now();
 
     ctx.save();
+    // new tiles pop onto the board, then float gently; a tile eaten in the
+    // wrong order shudders and flashes red
+    if (motionOK()){
+      const age = now - (p.born || 0);
+      const cxm = x + w / 2, cym = y + h / 2;
+      let sc = 1;
+      if (age < 360){ const q = age / 360; sc = 1 + 2.2 * Math.pow(q - 1, 3) + 1.2 * Math.pow(q - 1, 2); sc = Math.max(0.2, sc); }
+      const bob = Math.sin(t / 650 + p.cx * .7 + p.cy * 1.3) * CELL * 0.05;
+      ctx.translate(cxm, cym + bob); ctx.scale(sc, sc); ctx.translate(-cxm, -cym);
+    }
+    const hitAge = p.hitAt ? now - p.hitAt : 1e9;
+    if (hitAge < 520){
+      ctx.translate(Math.sin(hitAge / 22) * CELL * 0.16 * (1 - hitAge / 520), 0);
+      border = '#ff4f63'; glow = 'rgba(255,79,99,.7)';
+    }
     if (hidden){
       // the fog has taken this word — you can see that something is there, not what
       ctx.globalAlpha = 0.85;
@@ -5000,20 +5055,36 @@ function drawPellets(t){
       rr(ctx, x - g, y - g, w + g * 2, h + g * 2, rad + 2);
       ctx.stroke();
     }
-    ctx.shadowColor = glow;
-    ctx.shadowBlur = (p.type === 'gate' ? 16 : 10) + pulse * 5;
     const shape = (p.role && sc >= 2) ? p.role : null;
     const paint = () => { if (shape) roleShape(ctx, x, y, w, h, shape); else rr(ctx, x, y, w, h, rad); };
-    ctx.fillStyle = fill;
+    // a solid tile with a soft glow and a lit top edge, so words read as
+    // objects on the board rather than outlines floating in the dark
+    ctx.shadowColor = glow;
+    ctx.shadowBlur = (p.type === 'gate' ? 14 : 9) + pulse * 4;
+    ctx.fillStyle = BOARD_INK ? 'rgba(255,253,247,.98)' : 'rgba(8,13,30,.96)';
     paint(); ctx.fill();
     ctx.shadowBlur = 0;
-    ctx.strokeStyle = border; ctx.lineWidth = shape ? 1.8 : 1.4;
+    ctx.fillStyle = BOARD_INK ? fill : fill.replace(/,[^,]*\)$/, ',0.24)');
+    paint(); ctx.fill();
+    const hl = ctx.createLinearGradient(0, y, 0, y + h);
+    hl.addColorStop(0, BOARD_INK ? 'rgba(255,255,255,.6)' : 'rgba(255,255,255,.14)');
+    hl.addColorStop(.5, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hl;
+    paint(); ctx.fill();
+    ctx.strokeStyle = border; ctx.lineWidth = shape ? 2 : 1.7;
     paint(); ctx.stroke();
 
     ctx.font = p.type === 'gate' ? GATE_FONT : PELLET_FONT;
-    ctx.fillStyle = text;
-    ctx.shadowColor = glow; ctx.shadowBlur = 6;
+    ctx.fillStyle = BOARD_INK ? text : (p.type === 'gate' ? text : '#f2f7ff');
+    ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = BOARD_INK ? 0 : 3;
     ctx.fillText(plain(p.text), x + w / 2, y + h / 2 + .5, Math.max(8, w - 4));
+    if (hitAge < 520){
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ff4f63'; ctx.lineWidth = Math.max(2, CELL * 0.1); ctx.lineCap = 'round';
+      const xs = Math.min(h, CELL) * 0.32, xc = x + w - xs - 3, yc = y + h / 2;
+      ctx.globalAlpha = 1 - hitAge / 520;
+      ctx.beginPath(); ctx.moveTo(xc - xs, yc - xs); ctx.lineTo(xc + xs, yc + xs); ctx.moveTo(xc + xs, yc - xs); ctx.lineTo(xc - xs, yc + xs); ctx.stroke();
+    }
     ctx.restore();
   });
 }
@@ -5047,102 +5118,203 @@ function drawPower(t){
   ctx.restore();
 }
 
-function drawSnake(t){
-  const sk = skinColors();
-  const n = G.snake.length;
-  const stunned = G.stun > 0;
+/* ---------- motion preferences ---------- */
+const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+// decorative motion (bobbing, confetti, flying words) respects Calm mode and
+// the device's reduced-motion setting; smooth gliding stays, since it is calmer
+// to watch than the old square-to-square jumps
+function motionOK(){ return !save.settings.calm && !REDUCED_MOTION; }
 
-  const evo = evoStage();
-  for (let i = n - 1; i >= 0; i--){
+/* Where each segment is drawn this frame. The game still moves one cell per
+   step; between steps every segment glides from where it was toward where it
+   now is, so the snake slides instead of hopping. Purely visual. */
+function snakeDrawPos(){
+  const n = G.snake.length, out = new Array(n);
+  const moving = G.active && !G.paused && !G.prep && G.stun <= 0 && !G.awaiting && G.prevPos;
+  const interval = performance.now() < G.slowUntil ? G.stepMs * 1.7 : G.stepMs;
+  const a = moving ? clamp(G.acc / interval, 0, 1) : 1;
+  const now = performance.now();
+  const happy = motionOK() && now < (G.happyUntil || 0) ? (G.happyUntil - now) / 1100 : 0;
+  for (let i = 0; i < n; i++){
     const s = G.snake[i];
-    const f = n > 1 ? i / (n - 1) : 0;
-    let col;
-    if (stunned && Math.floor(t / 90) % 2 === 0) col = '#ff4f63';
-    else if (i === 0) col = (s.role && s.word) ? rgb(ROLE_COLOR[s.role]) : sk.head;
-    else if (s.role) col = rgb(lerpArr(ROLE_COLOR[s.role], [20, 26, 52], f * .5));  // role color, dimming down the body
-    else if (sk.pat === 'rainbow') col = 'hsl(' + Math.round((i * 14 + t / 22) % 360) + ',92%,62%)';
-    else col = mixHex(sk.head, sk.tail, f);
-    if (sk.pat === 'stripe' && i % 2 === 1 && !s.role) col = mixHex(col.indexOf('#') === 0 ? col : sk.head, '#04060f', .42);
+    const p = (G.prevPos && G.prevPos[i]) || s;
+    let x = s.x, y = s.y;
+    // a wrap across the board edge would sweep the whole width, so it snaps
+    if (Math.abs(s.x - p.x) <= 1 && Math.abs(s.y - p.y) <= 1){ x = p.x + (s.x - p.x) * a; y = p.y + (s.y - p.y) * a; }
+    out[i] = { x:x * CELL + CELL / 2, y:y * CELL + CELL / 2, cx:s.x, cy:s.y };
+  }
+  if (happy > 0){
+    // a little victory wiggle down the body
+    for (let i = 1; i < n; i++){
+      const q = out[i], r = out[i - 1];
+      let dx = r.x - q.x, dy = r.y - q.y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+      const amp = CELL * 0.22 * happy * Math.sin(i * 0.9 - now / 70);
+      q.x += -dy * amp; q.y += dx * amp;
+    }
+  }
+  return out;
+}
+function segColor(i, n, t, sk, stunned){
+  const s = G.snake[i];
+  const f = n > 1 ? i / (n - 1) : 0;
+  if (stunned && Math.floor(t / 90) % 2 === 0) return '#ff4f63';
+  if (i === 0) return (s.role && s.word) ? rgb(ROLE_COLOR[s.role]) : sk.head;
+  if (s.role) return rgb(lerpArr(ROLE_COLOR[s.role], BOARD_INK ? [120,110,90] : [20, 26, 52], f * .45));
+  if (sk.pat === 'rainbow') return 'hsl(' + Math.round((i * 14 + t / 22) % 360) + ',92%,62%)';
+  let col = mixHex(sk.head, sk.tail, f);
+  if (sk.pat === 'stripe' && i % 2 === 1) col = rgb(lerpArr(hexToArr(col), [4, 6, 15], .38));
+  return col;
+}
+function drawSnake(t){
+  const n = G.snake.length;
+  if (!n) return;
+  const sk = skinColors();
+  const stunned = G.stun > 0;
+  const evo = evoStage();
+  const P = snakeDrawPos();
+  const rad = i => CELL * (i === 0 ? 0.44 : 0.40 - 0.15 * (n > 1 ? i / (n - 1) : 0));
+  const near = (a, b) => Math.abs(a.x - b.x) <= CELL * 1.2 && Math.abs(a.y - b.y) <= CELL * 1.2;
+  const cols = G.snake.map((_, i) => segColor(i, n, t, sk, stunned));
 
-    const pad = CELL * 0.085 + f * CELL * 0.065;
-    const x = s.x * CELL + pad, y = s.y * CELL + pad, w = CELL - pad * 2, h = CELL - pad * 2;
-    ctx.save();
-    if (sk.pat === 'ghost') ctx.globalAlpha = 0.74;
-    const glowBoost = sk.pat === 'glow' ? 1.9 : 1;
-    ctx.shadowColor = col;
-    ctx.shadowBlur = (i === 0 ? CELL * 0.66 : CELL * 0.3 * (1 - f * .7)) * glowBoost;
-    ctx.fillStyle = col;
-    rr(ctx, x, y, w, h, CELL * (i === 0 ? 0.26 : 0.17));
-    ctx.fill();
-    // evolution: dorsal spines
-    if (evo >= 2 && i > 0 && i % 2 === 0 && i < n - 1){
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.75;
-      const sp = CELL * 0.17;
+  ctx.save();
+  if (sk.pat === 'ghost') ctx.globalAlpha = 0.74;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // 1. soft glow under the head
+  const hp = P[0];
+  if (!BOARD_INK){
+    const g = ctx.createRadialGradient(hp.x, hp.y, 0, hp.x, hp.y, CELL * 1.6);
+    g.addColorStop(0, rgba(hexToArr(cols[0]), .28)); g.addColorStop(1, rgba(hexToArr(cols[0]), 0));
+    ctx.fillStyle = g; ctx.fillRect(hp.x - CELL * 1.6, hp.y - CELL * 1.6, CELL * 3.2, CELL * 3.2);
+  }
+  // 2. outline pass gives the body a clean edge on any background
+  ctx.strokeStyle = BOARD_INK ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.45)';
+  for (let i = n - 1; i >= 1; i--){
+    if (!near(P[i], P[i - 1])) continue;
+    ctx.lineWidth = rad(i) * 2 + 3;
+    ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[i - 1].x, P[i - 1].y); ctx.stroke();
+  }
+  // 3. the body: one continuous tube that tapers to the tail
+  const glow = sk.pat === 'glow';
+  if (glow){ ctx.shadowColor = sk.head; ctx.shadowBlur = CELL * 0.5; }
+  for (let i = n - 1; i >= 1; i--){
+    ctx.strokeStyle = cols[i];
+    ctx.fillStyle = cols[i];
+    if (near(P[i], P[i - 1])){
+      ctx.lineWidth = rad(i) * 2;
+      ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[i - 1].x, P[i - 1].y); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(P[i].x, P[i].y, rad(i), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.shadowBlur = 0;
+  // 4. a highlight along the back makes it read as round, not flat
+  ctx.strokeStyle = BOARD_INK ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.16)';
+  for (let i = n - 1; i >= 1; i--){
+    if (!near(P[i], P[i - 1])) continue;
+    ctx.lineWidth = Math.max(1, rad(i) * 0.55);
+    ctx.beginPath();
+    ctx.moveTo(P[i].x - rad(i) * 0.22, P[i].y - rad(i) * 0.3);
+    ctx.lineTo(P[i - 1].x - rad(i) * 0.22, P[i - 1].y - rad(i) * 0.3);
+    ctx.stroke();
+  }
+  // patterns and evolution details
+  for (let i = 1; i < n; i++){
+    const s = G.snake[i];
+    if (sk.pat === 'dots' && !s.role && i % 2 === 0){
+      ctx.fillStyle = 'rgba(4,6,15,.5)';
+      ctx.beginPath(); ctx.arc(P[i].x, P[i].y, Math.max(1, CELL * 0.1), 0, Math.PI * 2); ctx.fill();
+    }
+    if (evo >= 2 && i % 2 === 0 && i < n - 1 && near(P[i], P[i - 1])){
+      let dx = P[i - 1].x - P[i].x, dy = P[i - 1].y - P[i].y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+      const r = rad(i), sp = CELL * 0.16;
+      const bx = P[i].x - dy * r, by = P[i].y + dx * r;
+      ctx.fillStyle = cols[i]; ctx.globalAlpha = 0.8;
       ctx.beginPath();
-      ctx.moveTo(x + w / 2 - sp, y);
-      ctx.lineTo(x + w / 2, y - sp * 1.5);
-      ctx.lineTo(x + w / 2 + sp, y);
+      ctx.moveTo(bx - dx * sp, by - dy * sp);
+      ctx.lineTo(bx - dy * sp * 1.4, by + dx * sp * 1.4);
+      ctx.lineTo(bx + dx * sp, by + dy * sp);
       ctx.closePath(); ctx.fill();
       ctx.globalAlpha = sk.pat === 'ghost' ? 0.74 : 1;
     }
-    if (sk.pat === 'dots' && i > 0 && !s.role){
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(4,6,15,.55)';
-      ctx.beginPath();
-      ctx.arc(x + w / 2, y + h / 2, Math.max(1, CELL * 0.11), 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-
-    if (i === 0){
-      const cxp = s.x * CELL + CELL / 2, cyp = s.y * CELL + CELL / 2;
-      // evolution: head aura
-      if (evo >= 1){
-        const pl = 0.5 + 0.5 * Math.sin(t / 340);
-        ctx.save();
-        ctx.strokeStyle = col;
-        ctx.globalAlpha = 0.18 + pl * 0.22;
-        ctx.lineWidth = Math.max(1, CELL * 0.07);
-        ctx.beginPath(); ctx.arc(cxp, cyp, CELL * (0.62 + pl * 0.14), 0, Math.PI * 2); ctx.stroke();
-        if (evo >= 4){
-          ctx.globalAlpha = 0.12 + pl * 0.14;
-          ctx.beginPath(); ctx.arc(cxp, cyp, CELL * (0.95 + pl * 0.2), 0, Math.PI * 2); ctx.stroke();
-        }
-        ctx.restore();
-      }
-      const dx = G.dir.x, dy = G.dir.y;
-      const ox = dy !== 0 ? CELL * 0.175 : 0, oy = dx !== 0 ? CELL * 0.175 : 0;
-      const fx = dx * CELL * 0.14, fy = dy * CELL * 0.14;
-      const er = Math.max(1.3, CELL * 0.088);
-      ctx.fillStyle = sk.eye;
-      if (G.drowsy > 0.5){
-        // Noodle is napping again
-        ctx.strokeStyle = sk.eye; ctx.lineWidth = Math.max(1, CELL * 0.07);
-        ctx.beginPath(); ctx.moveTo(cxp + fx + ox - er, cyp + fy + oy); ctx.lineTo(cxp + fx + ox + er, cyp + fy + oy); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(cxp + fx - ox - er, cyp + fy - oy); ctx.lineTo(cxp + fx - ox + er, cyp + fy - oy); ctx.stroke();
-      } else {
-        ctx.beginPath(); ctx.arc(cxp + fx + ox, cyp + fy + oy, er, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(cxp + fx - ox, cyp + fy - oy, er, 0, Math.PI * 2); ctx.fill();
-      }
-    }
   }
+
+  // 5. the head: an oval pointed where he is going, with eyes that follow
+  const ang = Math.atan2(G.dir.y, G.dir.x);
+  const hr = rad(0);
+  ctx.save();
+  ctx.translate(hp.x, hp.y); ctx.rotate(ang);
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  ctx.beginPath(); ctx.ellipse(0, 0, hr * 1.18 + 1.5, hr * 1.02 + 1.5, 0, 0, Math.PI * 2); ctx.fill();
+  const hg = ctx.createRadialGradient(-hr * .3, -hr * .35, hr * .1, 0, 0, hr * 1.3);
+  hg.addColorStop(0, rgb(lerpArr(hexToArr(cols[0]), [255, 255, 255], .35)));
+  hg.addColorStop(1, cols[0]);
+  ctx.fillStyle = hg;
+  ctx.shadowColor = cols[0]; ctx.shadowBlur = BOARD_INK ? 0 : CELL * 0.5 * (glow ? 1.6 : 1);
+  ctx.beginPath(); ctx.ellipse(0, 0, hr * 1.18, hr * 1.02, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // tongue: a quick flick every couple of seconds while he is awake
+  const tongueOn = motionOK() && G.drowsy < 0.3 && !stunned && (t % 2300) < 230;
+  if (tongueOn){
+    const L = hr * (1.1 + 0.5 * Math.sin((t % 2300) / 230 * Math.PI));
+    ctx.strokeStyle = '#ff4f8b'; ctx.lineWidth = Math.max(1, CELL * 0.06); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hr * 1.05, 0); ctx.lineTo(hr * 1.05 + L * .6, 0);
+    ctx.lineTo(hr * 1.05 + L, -hr * .22); ctx.moveTo(hr * 1.05 + L * .6, 0); ctx.lineTo(hr * 1.05 + L, hr * .22); ctx.stroke();
+  }
+  // eyes
+  const ex = hr * 0.42, ey = hr * 0.5, er = Math.max(1.6, hr * 0.34);
+  const blink = (t % 3700) < 130;
+  [-1, 1].forEach(side => {
+    const cx = ex, cy = ey * side;
+    if (G.drowsy > 0.5 || blink){
+      ctx.strokeStyle = sk.eye; ctx.lineWidth = Math.max(1, CELL * 0.07);
+      ctx.beginPath(); ctx.arc(cx, cy, er * .8, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(cx, cy, er, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = stunned ? '#ff4f63' : (sk.eye === '#000000' ? '#000' : sk.eye);
+      ctx.beginPath(); ctx.arc(cx + er * 0.35, cy, er * 0.55, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      ctx.beginPath(); ctx.arc(cx + er * 0.15, cy - er * 0.25, er * 0.18, 0, Math.PI * 2); ctx.fill();
+    }
+  });
+  ctx.restore();
+
+  // evolution: head aura
+  if (evo >= 1){
+    const pl = 0.5 + 0.5 * Math.sin(t / 340);
+    ctx.strokeStyle = cols[0];
+    ctx.globalAlpha = 0.16 + pl * 0.2;
+    ctx.lineWidth = Math.max(1, CELL * 0.07);
+    ctx.beginPath(); ctx.arc(hp.x, hp.y, CELL * (0.72 + pl * 0.14), 0, Math.PI * 2); ctx.stroke();
+    if (evo >= 4){
+      ctx.globalAlpha = 0.1 + pl * 0.12;
+      ctx.beginPath(); ctx.arc(hp.x, hp.y, CELL * (1.05 + pl * 0.2), 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  // the hat he bought is finally on his head
+  const hat = wornHat();
+  if (hat){
+    ctx.font = Math.round(CELL * 0.78) + 'px ' + MONO;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(hat.ic, hp.x, hp.y - CELL * 0.62);
+  }
+  ctx.restore();
 
   // Noodle, asleep on the job
   if (G.drowsy > 0.05){
-    const h = G.snake[0];
-    const bx = h.x * CELL + CELL * 0.75, by = h.y * CELL - CELL * 0.25;
+    const bx = hp.x + CELL * 0.25, by = hp.y - CELL * 0.75;
     ctx.save();
-    ctx.globalAlpha = G.drowsy;
     ctx.fillStyle = '#cdb4ff';
     ctx.shadowColor = '#9b6bff'; ctx.shadowBlur = CELL * 0.4;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     for (let z = 0; z < 3; z++){
       const ph = ((t / 900) + z * 0.33) % 1;
-      const size = CELL * (0.32 + z * 0.16);
+      const size = CELL * (0.36 + z * 0.16);
       ctx.globalAlpha = G.drowsy * (1 - ph) * 0.95;
-      ctx.font = '800 ' + Math.max(7, Math.round(size)) + 'px ' + MONO;
+      ctx.font = '800 ' + Math.max(8, Math.round(size)) + 'px ' + MONO;
       ctx.fillText('z', bx + Math.sin(ph * 4 + z) * CELL * 0.45 + ph * CELL * 0.5, by - ph * CELL * 1.9);
     }
     ctx.restore();
@@ -5158,13 +5330,12 @@ function drawSnake(t){
     if (!s.word) continue;
     const col = ROLE_COLOR[s.role] ? rgb(ROLE_COLOR[s.role]) : '#dfe7ff';
     const label = plain(s.word);
-    const lh = Math.max(9, CELL * 0.46);
-    const w = ctx.measureText(label).width + CELL * 0.34;
-    let lx = s.x * CELL + CELL / 2 - w / 2;
+    const lh = Math.max(14, CELL * 0.62);
+    const w = ctx.measureText(label).width + CELL * 0.5;
+    let lx = P[i].x - w / 2;
     lx = clamp(lx, 1, gridW() - w - 1);
-    const ly = s.y * CELL - lh;
-    const yy = ly < 1 ? s.y * CELL + CELL + 1 : ly;
-    // skip anything that would collide with a label already drawn
+    const ly = P[i].y - CELL * 0.55 - lh;
+    const yy = ly < 1 ? P[i].y + CELL * 0.55 : ly;
     let hit = false;
     for (let k = 0; k < drawn.length && !hit; k++){
       const d = drawn[k];
@@ -5174,17 +5345,132 @@ function drawSnake(t){
     drawn.push({ x:lx, y:yy, w:w });
     shown++;
     ctx.save();
-    ctx.globalAlpha = .92 - shown * .18;
-    ctx.fillStyle = 'rgba(4,6,15,.85)';
-    rr(ctx, lx, yy, w, lh, 3); ctx.fill();
-    ctx.strokeStyle = col; ctx.lineWidth = 1;
-    rr(ctx, lx, yy, w, lh, 3); ctx.stroke();
-    ctx.fillStyle = col;
-    ctx.fillText(label, lx + w / 2, yy + lh / 2);
+    ctx.globalAlpha = 1 - shown * .16;
+    ctx.fillStyle = BOARD_INK ? 'rgba(255,253,247,.95)' : 'rgba(6,10,24,.9)';
+    rr(ctx, lx, yy, w, lh, lh / 2); ctx.fill();
+    ctx.strokeStyle = col; ctx.lineWidth = 1.4;
+    rr(ctx, lx, yy, w, lh, lh / 2); ctx.stroke();
+    ctx.fillStyle = BOARD_INK ? rgb(lerpArr(ROLE_COLOR[s.role] || [60,60,60], [0,0,0], .35)) : col;
+    ctx.fillText(label, lx + w / 2, yy + lh / 2 + .5);
     ctx.restore();
   }
 }
+function hexToArr(c){
+  if (c && c.charAt(0) === '#') return [parseInt(c.substr(1, 2), 16), parseInt(c.substr(3, 2), 16), parseInt(c.substr(5, 2), 16)];
+  const m = String(c).match(/\d+/g);
+  if (m && /^hsl/.test(c)) return [255, 255, 255];
+  return m ? [+m[0], +m[1], +m[2]] : [166, 255, 61];
+}
 
+/* ---------- board effects: crunches, misses, confetti, flying words ---------- */
+function pelletRect(p){
+  const ix = Math.max(1.5, CELL * 0.085), iy = Math.max(2, CELL * 0.12);
+  return { x:p.cx * CELL + ix, y:p.cy * CELL + iy, w:p.wc * CELL - ix * 2, h:CELL - iy * 2 };
+}
+function pelletColor(p){
+  if (p.type === 'gate') return p.tone === 'active' ? [166,255,61] : p.tone === 'passive' ? [255,66,200] : p.tone === 'a' ? [62,240,255] : [255,203,61];
+  return (p.role && scaffoldLevel() >= 3) ? ROLE_COLOR[p.role] : [62,240,255];
+}
+function addFx(kind, p){
+  const r = pelletRect(p);
+  G.fx.push({ kind:kind, text:plain(p.text), x:r.x, y:r.y, w:r.w, h:r.h, col:kind === 'crunch' ? pelletColor(p) : [255,79,99], t0:performance.now(), type:p.type });
+}
+function drawFx(t){
+  const now = performance.now();
+  for (let i = G.fx.length - 1; i >= 0; i--){
+    const f = G.fx[i], age = now - f.t0;
+    const dur = f.kind === 'crunch' ? 260 : 600;
+    if (age > dur){ G.fx.splice(i, 1); continue; }
+    const k = age / dur;
+    ctx.save();
+    ctx.font = f.type === 'gate' ? GATE_FONT : PELLET_FONT;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    let cx = f.x + f.w / 2, cy = f.y + f.h / 2, sc = 1;
+    if (f.kind === 'crunch'){
+      // the tile is pulled into Noodle's mouth
+      const h = G.snake[0] ? { x:G.snake[0].x * CELL + CELL / 2, y:G.snake[0].y * CELL + CELL / 2 } : { x:cx, y:cy };
+      cx += (h.x - cx) * k; cy += (h.y - cy) * k; sc = 1 - k * 0.85;
+      ctx.globalAlpha = 1 - k * 0.6;
+    } else {
+      // a miss: the tile shudders, goes red, and is crossed out
+      cx += Math.sin(age / 22) * CELL * 0.18 * (1 - k);
+      ctx.globalAlpha = 1 - Math.max(0, k - 0.55) / 0.45;
+    }
+    ctx.translate(cx, cy); ctx.scale(sc, sc);
+    ctx.fillStyle = BOARD_INK ? rgba(f.col, .18) : rgba(f.col, .28);
+    rr(ctx, -f.w / 2, -f.h / 2, f.w, f.h, Math.max(3, CELL * 0.22)); ctx.fill();
+    ctx.strokeStyle = rgb(f.col); ctx.lineWidth = 2;
+    rr(ctx, -f.w / 2, -f.h / 2, f.w, f.h, Math.max(3, CELL * 0.22)); ctx.stroke();
+    ctx.fillStyle = BOARD_INK ? '#1c1a16' : '#ffffff';
+    ctx.fillText(f.text, 0, .5, Math.max(8, f.w - 4));
+    if (f.kind === 'wrong'){
+      ctx.strokeStyle = '#ff4f63'; ctx.lineWidth = Math.max(2, CELL * 0.12); ctx.lineCap = 'round';
+      const s = Math.min(f.h, CELL) * 0.42;
+      ctx.beginPath(); ctx.moveTo(-s, -s); ctx.lineTo(s, s); ctx.moveTo(s, -s); ctx.lineTo(-s, s); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  // confetti
+  for (let i = 0; i < G.confetti.length; i++){
+    const c = G.confetti[i];
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, c.life * 2));
+    ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+    ctx.fillStyle = c.col;
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h * Math.abs(Math.cos(c.flip)));
+    ctx.restore();
+  }
+}
+function confettiBurst(x, y, n){
+  if (!motionOK()) return;
+  const cols = [rgb(ROLE_COLOR.actor), rgb(ROLE_COLOR.verb), rgb(ROLE_COLOR.recv), '#ff42c8', '#ffffff'];
+  for (let i = 0; i < n; i++){
+    const a = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.1, sp = 3 + Math.random() * 5;
+    G.confetti.push({ x:x, y:y, vx:Math.cos(a) * sp, vy:Math.sin(a) * sp, rot:Math.random() * 6, vr:(Math.random() - .5) * .4,
+      flip:Math.random() * 6, w:CELL * (0.22 + Math.random() * 0.18), h:CELL * (0.32 + Math.random() * 0.2),
+      col:cols[i % cols.length], life:1.4 + Math.random() * .6 });
+  }
+}
+function stepConfetti(dt){
+  const k = dt / 16.7;
+  for (let i = G.confetti.length - 1; i >= 0; i--){
+    const c = G.confetti[i];
+    c.x += c.vx * k; c.y += c.vy * k; c.vy += 0.18 * k; c.vx *= Math.pow(0.985, k);
+    c.rot += c.vr * k; c.flip += 0.25 * k; c.life -= 0.012 * k;
+    if (c.life <= 0 || c.y > gridH() + 20) G.confetti.splice(i, 1);
+  }
+}
+/* The word just eaten flies up out of the board and lands in its blank in the
+   sentence above: the game's whole lesson, in one motion. */
+function flyWordToSentence(p, idx){
+  if (!motionOK() || !cv.getBoundingClientRect) return;
+  const dest = $$('#prompt .build .w')[idx];
+  if (!dest || !dest.animate) return;
+  const cr = cv.getBoundingClientRect();
+  const sx = cr.left + (p.cx + p.wc / 2) * CELL * (cr.width / gridW());
+  const sy = cr.top + (p.cy + 0.5) * CELL * (cr.height / gridH());
+  const dr = dest.getBoundingClientRect();
+  if (!dr.width) return;
+  const el = document.createElement('div');
+  el.className = 'flyword r-' + (p.role || 'verb');
+  el.textContent = plain(p.text);
+  document.body.appendChild(el);
+  const er = el.getBoundingClientRect();
+  const fromX = sx - er.width / 2, fromY = sy - er.height / 2;
+  const toX = dr.left + dr.width / 2 - er.width / 2, toY = dr.top + dr.height / 2 - er.height / 2;
+  dest.style.opacity = '0';
+  const anim = el.animate([
+    { transform:'translate(' + fromX + 'px,' + fromY + 'px) scale(1)', opacity:1 },
+    { transform:'translate(' + ((fromX + toX) / 2) + 'px,' + (Math.min(fromY, toY) - 40) + 'px) scale(1.15)', opacity:1, offset:.55 },
+    { transform:'translate(' + toX + 'px,' + toY + 'px) scale(1)', opacity:1 }
+  ], { duration:480, easing:'cubic-bezier(.3,.7,.3,1)' });
+  const done = () => {
+    el.remove();
+    dest.style.opacity = '';
+    dest.classList.add('landed');
+  };
+  anim.onfinish = done; anim.oncancel = done;
+}
 function mixHex(a, b, f){
   const pa = [parseInt(a.substr(1,2),16), parseInt(a.substr(3,2),16), parseInt(a.substr(5,2),16)];
   const pb = [parseInt(b.substr(1,2),16), parseInt(b.substr(3,2),16), parseInt(b.substr(5,2),16)];
@@ -5470,16 +5756,19 @@ function applyKindTheme(){
 function onEat(p){
   const px = (p.cx + p.wc / 2) * CELL, py = p.cy * CELL + CELL / 2;
   if (p.type === 'word'){
-    if (p.idx === G.progress) return correctWord(p, px, py);
+    if (p.idx === G.progress){ addFx('crunch', p); return correctWord(p, px, py); }
+    p.hitAt = performance.now();
     return penalty('order', p, px, py);
   }
-  if (p.type === 'trap') return penalty('trap', p, px, py);
+  if (p.type === 'trap'){ addFx('wrong', p); return penalty('trap', p, px, py); }
   if (p.type === 'gate'){
     const task = G.task;
     if (task.kind === 'forge'){ G.awaiting = true; openForge(); return; }
     const right = task.kind === 'classify' ? (p.val === task.answer)
                 : task.kind === 'verb'     ? (p.val === task.want)
                 : (p.val === task.correct);
+    addFx(right ? 'crunch' : 'wrong', p);
+    if (right && G.mode !== 'sort') confettiBurst(px, py, 26);
     return gateAnswer(right, p, px, py);
   }
 }
@@ -5537,6 +5826,7 @@ function correctWord(p, px, py){
   ripple(px, py, rgb(ROLE_COLOR[p.role] || [166,255,61]));
   updateHUD();
   renderPrompt();
+  flyWordToSentence(p, G.progress - 1);
   if (G.progress >= G.task.words.length) sentenceComplete();
 }
 
@@ -5615,6 +5905,8 @@ function sentenceComplete(){
   G.shake = 6;
   $('#prompt').classList.add('surge');
   burst(gridW() / 2, G.surgeY, '#a6ff3d', 26);
+  confettiBurst(G.snake[0].x * CELL + CELL / 2, G.snake[0].y * CELL, 70);
+  G.happyUntil = performance.now() + 1100;
   showTip('good', 'Active voice restored',
     '<span style="color:var(--dim)">' + esc(task.passive) + '</span> &nbsp;&rarr;&nbsp; <b>' + esc(task.active) + '</b><br>' +
     '<span class="tiny" style="color:var(--dim)">The agent moved to the front and the &ldquo;to be&rdquo; helper disappeared. Same event, ' +
@@ -6384,7 +6676,7 @@ function startRun(mode, idx){
   G.lastInput = performance.now();
   G.stepMs = Math.round(level.speed * paceMult() * (1 + (save.upgrades.slowmo || 0) * 0.09));
   G.acc = 0; G.stun = 0;
-  G.particles = []; G.floats = []; G.ripples = []; G.surge = 0;
+  G.particles = []; G.floats = []; G.ripples = []; G.surge = 0; G.fx = []; G.confetti = []; G.happyUntil = 0;
   G.limit = mode === 'sort' ? 60
           : (save.settings.timer && mode === 'campaign') ? levelTimeLimit(level) : 0;
   G.sorted = 0;
@@ -7161,14 +7453,12 @@ function abandonRun(){
 }
 function show(name){
   if (name !== 'play') abandonRun();
-  if (name !== 'teacher' && name !== 'key') gateUnlocked = false;   // leaving re-locks it
   $$('.screen').forEach(s => s.classList.remove('active'));
   const el = $('#scr-' + name);
   if (el) el.classList.add('active');
   document.body.classList.toggle('playing', name === 'play');
   layout();
   if (name === 'play') requestAnimationFrame(layout);   // re-measure once flex has settled
-  if (name !== 'menu' && $('#send-box')) $('#send-box').hidden = true;
   if (name === 'menu'){ renderChecksPanel(); applyReveals(); renderMoveCard(); renderPlayers(); renderLevelGrid(); renderWallets(); renderRank(); renderBandRow(); renderPaceRow(); renderMenuExtras(); renderContracts();
     // fire the tier front page once the debrief is out of the way, not on top of it
     if (G.tierJustCleared){ const band = G.tierJustCleared; G.tierJustCleared = 0; setTimeout(() => celebrateTier(band), 420); }
@@ -7187,6 +7477,7 @@ function show(name){
       ci.value = classData.custom.map(c => c.p + ' | ' + c.a).join('\n'); }
   if (name === 'key'){ renderAnswerKey(); }
   if (name === 'check'){ renderCheck(); }
+  if (name === 'me'){ renderMyResults(); }
   window.scrollTo(0, 0);
 }
 function renderWallets(){
@@ -7284,12 +7575,12 @@ function renderChecksPanel(){
   if (postCheckOpen()) parts.push('<button class="btn sm mag" id="ck-open-post">&#127937; ' + (post ? 'Retake' : 'Take') + ' the Final Check' +
     (post ? ' <span class="cklast">last: ' + post.correct + '/' + post.total + '</span>' : '') + '</button>');
   const any = pre || post || (save.log || []).some(r => r.student === name);
-  if (any) parts.push('<button class="btn sm ghost" id="ck-send-menu">&#128228; Send results to my teacher</button>');
+  if (any) parts.push('<button class="btn sm ghost" id="ck-me-menu">&#128202; My Results</button>');
   el.hidden = !parts.length;
   el.innerHTML = '<div class="namerow" style="margin:0">' + parts.join('') + '</div>';
   const a = $('#ck-open-pre'); if (a) a.onclick = () => { SFX.unlock(); SFX.click(); if (requireName()) openCheck('pre'); };
   const b = $('#ck-open-post'); if (b) b.onclick = () => { SFX.unlock(); SFX.click(); if (requireName()) openCheck('post'); };
-  const c = $('#ck-send-menu'); if (c) c.onclick = () => { SFX.click(); showSendResults(); };
+  const c = $('#ck-me-menu'); if (c) c.onclick = () => { SFX.click(); show('me'); };
 }
 function renderMenuExtras(){
   const nCustom = (classData.custom || []).length;
@@ -7530,6 +7821,8 @@ const REVEALS = [
     label:'Editor Ranks', note:'You are earning XP now. Rank unlocks better gear.' },
   { id:'modes', sel:'#panel-modes', when:() => missionsDone() >= 2,
     label:'Extra Modes', note:'Practice, daily challenges, a tournament and more.' },
+  { id:'me', nav:'me', when:() => !!save.student && ((save.log || []).some(r => r.student === save.student) || testsFor(save.student).length > 0),
+    label:'My Results', note:'Your grade, scores and skills, any time.' },
   { id:'codex', nav:'codex', when:() => Object.keys(save.codex).length > 0,
     label:'Grammar Codex', note:'Every rule the game tests, saved for you to reread.' },
   { id:'shop', nav:'shop', when:() => save.bytes >= 150,
@@ -8125,20 +8418,10 @@ function renderTrophies(){
 /* ============================================================
    15. TEACHER TOOLS
    ============================================================ */
-let gateAnswerValue = 0, gateUnlocked = false;
-function newGate(){
-  const a = 3 + rnd(9), b = 4 + rnd(9);
-  gateAnswerValue = a * b;
-  $('#gate-q').innerHTML = a + ' &times; ' + b + ' = ?';
-}
 function card(label, value, cls){
   return '<div class="card ' + (cls || '') + '"><div class="lb">' + label + '</div><div class="vl">' + value + '</div></div>';
 }
 function renderTeacher(){
-  $('#teacher-gate').hidden = gateUnlocked;
-  $('#teacher-body').hidden = !gateUnlocked;
-  if (!gateUnlocked){ newGate(); $('#gate-a').value = ''; $('#gate-msg').textContent = ''; return; }
-
   const log = save.log;
   const students = {};
   log.forEach(r => students[r.student] = 1);
@@ -8907,7 +9190,7 @@ function renderCheck(){
       '<div class="sc-when">' + when.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' }) + ' &middot; ' +
         when.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' }) + ' &middot; Attempt ' + attempt + '</div>' +
     '</div>' +
-    '<p class="tiny" style="color:var(--dim);text-align:center;margin-top:6px">Show this score to your teacher, or tap <b>Send results to my teacher</b>.</p>' +
+    '<p class="tiny" style="color:var(--dim);text-align:center;margin-top:6px">Show this score to your teacher.</p>' +
     (pre ? '<p class="ckgrow" style="color:' + (grow > 0 ? 'var(--lime)' : grow < 0 ? 'var(--amber)' : 'var(--cyan)') + '">' +
       (grow > 0 ? '&#11014; Up ' + grow + ' from your Placement Check (' + pre.correct + '/' + pre.total + ').'
         : grow === 0 ? 'Same score as your Placement Check (' + pre.correct + '/' + pre.total + ').'
@@ -8922,7 +9205,7 @@ function renderCheck(){
     '<details class="statfold"><summary>Review your answers</summary>' + review + '</details>' +
     '<div class="ovbtns">' +
       '<button class="btn primary" id="ck-play">&#9654; ' + (CK.form === 'pre' ? 'Start playing at Mission 1' : 'Back to the game') + '</button>' +
-      '<button class="btn" id="ck-send">&#128228; Send results to my teacher</button>' +
+      '<button class="btn" id="ck-me">&#128202; My Results</button>' +
       '<button class="btn ghost" id="ck-menu">Menu</button>' +
     '</div>';
   $('#ck-play').onclick = () => {
@@ -8930,13 +9213,10 @@ function renderCheck(){
     if (form === 'pre') startRun('campaign', 0); else show('menu');
   };
   $('#ck-menu').onclick = () => { CK = null; show('menu'); };
-  $('#ck-send').onclick = () => showSendResults();
+  $('#ck-me').onclick = () => { CK = null; show('me'); };
 }
 
-/* ---------- getting results to the teacher, with no accounts ----------
-   On 1:1 devices every student's data lives on their own Chromebook. The
-   student copies a short code; the teacher pastes everyone's codes into
-   Teacher Tools and the whole class appears in the Class Snapshot. */
+/* ---------- per-student practice stats, from the class log ---------- */
 function playStatsFor(name, since){
   const n = String(name).toLowerCase();
   const rows = (save.log || []).filter(r => String(r.student).toLowerCase() === n && (!since || r.ts >= since));
@@ -8962,74 +9242,120 @@ function playStatsFor(name, since){
   return { runs:rows.length, items:items, right:right, skills:skills, secs:secs, cleared:cleared,
            drills:drills, errs:errs, last:last, band:band, pace:pace, missed:missed };
 }
-function encodeResults(name){
-  const st = playStatsFor(name);
-  const top = Object.keys(st.missed).sort((a, b) => st.missed[b] - st.missed[a]).slice(0, 10);
-  const miss = {}; top.forEach(k => miss[k] = st.missed[k]);
-  st.missed = miss;
-  const payload = { v:1, n:name, ts:Date.now(), tests:testsFor(name), st:st };
-  return 'PS1:' + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+
+/* ============================================================
+   GRADEBOOK — a running letter grade, like a real gradebook
+   Every finished mission is an assignment scored on the questions the
+   student answered in it; every Final Check attempt is an assignment too.
+   The grade is the weighted average of the two categories, so it moves
+   with every new assignment instead of being fixed by one score. The
+   Placement Check is a diagnostic pre-test: listed, never graded.
+   ============================================================ */
+const GRADE_WEIGHTS = { practice:0.6, final:0.4 };
+const GRADE_MIN_ITEMS = 3;     // a mission quit after a word or two is not an assignment
+const GRADE_SCALE = [[93,'A'],[90,'A-'],[87,'B+'],[83,'B'],[80,'B-'],[77,'C+'],[73,'C'],[70,'C-'],[67,'D+'],[63,'D'],[60,'D-'],[0,'F']];
+function letterFor(pct){
+  for (let i = 0; i < GRADE_SCALE.length; i++) if (pct >= GRADE_SCALE[i][0]) return GRADE_SCALE[i][1];
+  return 'F';
 }
-function decodeResults(code){
-  try {
-    const p = JSON.parse(decodeURIComponent(escape(atob(code.replace(/^PS1:/, '')))));
-    return (p && p.v === 1 && p.n) ? p : null;
-  } catch (e){ return null; }
+function gradeClass(letter){ return !letter ? 'none' : letter[0] === 'A' ? 'a' : letter[0] === 'B' ? 'b' : letter[0] === 'C' ? 'c' : letter[0] === 'D' ? 'd' : 'f'; }
+function weightedGrade(practice, final){
+  if (practice == null && final == null) return null;
+  if (practice == null) return final;
+  if (final == null) return practice;
+  return practice * GRADE_WEIGHTS.practice + final * GRADE_WEIGHTS.final;
 }
-function showSendResults(){
-  const name = save.student;
-  if (!name){ SFX.deny(); return; }
-  const pre = latestTest(name, 'pre'), post = latestTest(name, 'post');
-  const st = playStatsFor(name);
-  const text = 'Passive Snake results — ' + name + '\n' +
-    'Placement Check: ' + (pre ? pre.correct + '/' + pre.total + ' (' + tierLabel(pre.placedBand) + ')' : 'not taken') + '\n' +
-    'Final Check: ' + (post ? post.correct + '/' + post.total : 'not taken') + '\n' +
-    'Practice: ' + st.items + ' questions, ' + (st.items ? Math.round(st.right / st.items * 100) : 0) + '% correct, ' +
-      st.cleared + ' missions cleared, ' + Math.round(st.secs / 60) + ' min played\n' +
-    'Teacher code: ' + encodeResults(name);
-  const box = $('#send-box');
-  box.hidden = false;
-  box.innerHTML =
-    '<h3>Send your results</h3>' +
-    '<p class="tiny" style="color:var(--dim)">Copy this and paste it wherever your teacher asks &mdash; a Google Classroom private comment, ' +
-    'a Google Form, or an email. Your teacher pastes it into Teacher Tools to see your scores.</p>' +
-    '<textarea class="fldarea" id="send-text" rows="6" readonly spellcheck="false">' + esc(text) + '</textarea>' +
-    '<div class="ovbtns"><button class="btn primary" id="send-copy">&#128203; Copy</button>' +
-    '<button class="btn ghost" id="send-close">Close</button></div>' +
-    '<p class="tiny" id="send-msg" style="color:var(--lime);min-height:16px"></p>';
-  const ta = $('#send-text');
-  $('#send-copy').onclick = () => {
-    const done = () => { $('#send-msg').textContent = 'Copied! Now paste it for your teacher.'; SFX.buy(); };
-    ta.focus(); ta.select();
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done, () => { try { document.execCommand('copy'); done(); } catch (e){ /* manual */ } });
-    } else { try { document.execCommand('copy'); done(); } catch (e){ $('#send-msg').textContent = 'Select the text and copy it.'; } }
-  };
-  $('#send-close').onclick = () => { box.hidden = true; };
-  box.scrollIntoView({ behavior:'smooth', block:'center' });
-}
-function importResults(text){
-  const codes = String(text).match(/PS1:[A-Za-z0-9+/=]+/g) || [];
-  let added = 0, bad = 0;
-  const names = {};
-  classData.imports = classData.imports || {};
-  classData.tests = classData.tests || [];
-  codes.forEach(c => {
-    const p = decodeResults(c);
-    if (!p){ bad++; return; }
-    const key = String(p.n).toLowerCase();
-    const prev = classData.imports[key];
-    if (!prev || prev.ts <= p.ts) classData.imports[key] = { n:String(p.n).slice(0, 28), ts:p.ts, st:p.st };
-    (p.tests || []).forEach(t => {
-      if (!t || !t.form || !t.ts) return;
-      const dup = classData.tests.some(x => String(x.student).toLowerCase() === key && x.form === t.form && x.ts === t.ts);
-      if (!dup){ t.student = String(p.n).slice(0, 28); t.imported = true; classData.tests.push(t); }
-    });
-    classData.tests.sort((a, b) => a.ts - b.ts);
-    names[key] = 1; added++;
+function gradebookFor(name, since){
+  const n = String(name).toLowerCase();
+  const items = [];
+  (save.log || []).forEach(r => {
+    if (String(r.student).toLowerCase() !== n || (since && r.ts < since)) return;
+    let a = 0, c = 0;
+    Object.keys(r.skills || {}).forEach(k => { a += r.skills[k].a || 0; c += r.skills[k].c || 0; });
+    if (a < GRADE_MIN_ITEMS) return;
+    items.push({ ts:r.ts, cat:'practice', counted:true, pct:Math.round(c / a * 100), detail:c + '/' + a,
+                 name:(r.levelId ? 'Mission ' + r.levelId + ': ' : '') + r.level, band:r.band });
   });
-  persist();
-  return { codes:added, students:Object.keys(names).length, bad:bad };
+  testsFor(name).forEach(t => {
+    if (since && t.ts < since) return;
+    items.push({ ts:t.ts, cat:t.form === 'post' ? 'final' : 'placement', counted:t.form === 'post',
+                 pct:t.acc, detail:t.correct + '/' + t.total, name:CHECK_NAME[t.form] });
+  });
+  items.sort((a, b) => a.ts - b.ts);
+  // running grade after each assignment, so the trend is visible
+  let ps = 0, pn = 0, fs = 0, fn = 0;
+  items.forEach(it => {
+    if (it.cat === 'practice'){ ps += it.pct; pn++; }
+    if (it.cat === 'final'){ fs += it.pct; fn++; }
+    const g = weightedGrade(pn ? ps / pn : null, fn ? fs / fn : null);
+    it.running = g == null ? null : Math.round(g);
+  });
+  const practice = pn ? ps / pn : null, final = fn ? fs / fn : null;
+  const g = weightedGrade(practice, final);
+  const pct = g == null ? null : Math.round(g);
+  const counted = items.filter(i => i.counted);
+  const prev = counted.length > 1 ? counted[counted.length - 2].running : null;
+  return { items:items, practice:practice == null ? null : Math.round(practice), final:final == null ? null : Math.round(final),
+           pn:pn, fn:fn, pct:pct, letter:pct == null ? null : letterFor(pct),
+           trend:(pct == null || prev == null) ? 0 : pct - prev };
+}
+function gradeBadge(gb, big){
+  if (!gb || gb.letter == null) return '<span class="gradechip none">' + (big ? 'No grade yet' : '\u2014') + '</span>';
+  return '<span class="gradechip g-' + gradeClass(gb.letter) + (big ? ' big' : '') + '">' + gb.letter +
+    ' <small>' + gb.pct + '%</small></span>';
+}
+function gradebookTable(gb){
+  if (!gb.items.length) return '<p class="muted tiny">No assignments yet.</p>';
+  return '<div class="tbl-wrap"><table style="min-width:auto" class="gbtable"><thead><tr><th>Date</th><th>Assignment</th><th>Score</th><th>Counts?</th><th>Grade after</th></tr></thead><tbody>' +
+    gb.items.slice().reverse().map(it => '<tr' + (it.counted ? '' : ' class="nc"') + '><td>' + new Date(it.ts).toLocaleDateString() + '</td>' +
+      '<td>' + esc(it.name) + '</td><td class="num">' + it.detail + ' &middot; ' + it.pct + '%</td>' +
+      '<td>' + (it.counted ? (it.cat === 'final' ? 'Final Check' : 'Practice') : 'No (pre-test)') + '</td>' +
+      '<td class="num">' + (it.counted && it.running != null ? letterFor(it.running) + ' ' + it.running + '%' : '\u2014') + '</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+
+/* ---------- My Results: what a student sees about themselves ---------- */
+function renderMyResults(){
+  const el = $('#me-body');
+  if (!el) return;
+  const name = save.student;
+  if (!name){
+    el.innerHTML = '<h2>My Results</h2><p>Type your name on the home screen first.</p>' +
+      '<div class="ovbtns"><button class="btn primary" data-go="menu">Home</button></div>';
+    $$('#me-body [data-go]').forEach(b => b.onclick = () => show(b.dataset.go));
+    return;
+  }
+  const s = studentSummary(name, 0);
+  const st = s.st, gb = s.grade;
+  const bars = ['classify', 'agent', 'verb', 'rebuild', 'forge', 'judgment', 'reason', 'revise'].filter(k => st.skills[k] && st.skills[k].a)
+    .map(k => {
+      const m = st.skills[k], pct = Math.round(m.c / m.a * 100);
+      const col = pct >= 85 ? 'var(--lime)' : pct >= 70 ? 'var(--amber)' : 'var(--red)';
+      return '<div class="ckskill"><div class="rowsplit"><span>' + esc(SKILL_META[k].name) + '</span><b style="color:' + col + '">' + pct + '%</b></div>' +
+        '<div class="bar"><i style="width:' + pct + '%;background:' + col + '"></i></div></div>';
+    }).join('');
+  el.innerHTML =
+    '<div class="kicker ckkick">My Results</div><h2>' + esc(name) + '</h2>' +
+    '<div class="gradebox mine">' + gradeBadge(gb, true) +
+      '<div class="tiny" style="color:var(--dim)">' + (gb.letter == null
+        ? 'Finish a mission or take the Final Check to get your first grade.'
+        : 'Your grade is the average of all your missions' + (gb.fn ? ' and Final Checks' : '') + '. Every new mission changes it.' +
+          (gb.trend ? ' <b style="color:' + (gb.trend > 0 ? 'var(--lime)' : 'var(--amber)') + '">' + (gb.trend > 0 ? '&#9650; Up ' : '&#9660; Down ') + Math.abs(gb.trend) + ' since your last one.</b>' : '')) +
+      '</div></div>' +
+    '<div class="cards" style="margin-top:12px">' +
+      card('Placement Check', s.pre ? s.pre.correct + '/' + s.pre.total : '\u2014', 'violet') +
+      card('Final Check (best)', s.post ? s.post.correct + '/' + s.post.total : '\u2014', 'mag') +
+      card('Questions right', st.right + ' of ' + st.items, 'lime') +
+      card('Missions finished', st.cleared, '') +
+      card('Time practicing', fmtMins(st.secs), '') +
+      card('Current tier', s.band ? 'T' + tierNum(s.band) + ' \u00b7 ' + tierName(s.band) : '\u2014', 'amber') +
+    '</div>' +
+    (bars ? '<h3>My skills</h3>' + bars : '') +
+    (s.weak ? '<p class="tiny" style="color:var(--amber)">Work on next: <b>' + esc(SKILL_META[s.weak].name) + '</b>. Open the Grammar Codex for a quick refresher.</p>' : '') +
+    '<details class="statfold"><summary>My gradebook</summary>' + gradebookTable(gb) + '</details>' +
+    '<div class="ovbtns"><button class="btn primary" id="me-play">&#9654; Play</button><button class="btn ghost" data-go="menu">Home</button></div>';
+  $('#me-play').onclick = () => { SFX.unlock(); $('#btn-play').click(); };
+  $$('#me-body [data-go]').forEach(b => b.onclick = () => { SFX.click(); show(b.dataset.go); });
 }
 
 /* ============================================================
@@ -9052,11 +9378,18 @@ function snapSince(){
    shows they have caught up. */
 function snapStatus(s){
   if (!s.st.items && !s.pre) return { k:'none', t:'No data yet' };
-  const up = () => (s.band || 8) >= 10 ? { k:'up', t:'Mastering' } : { k:'up', t:'Ready to move up' };
+  const g = s.grade || {};
+  const graded = (g.pn || 0) + (g.fn || 0);
+  const help = { k:'help', t:'Needs support' }, ok = { k:'ok', t:'On track' };
+  // the status never contradicts the grade: moving up takes at least a B-,
+  // and a steady run of low grades flags the student whatever else is true
+  const up = () => (g.pct != null && g.pct < 80) ? ok
+    : (s.band || 8) >= 10 ? { k:'up', t:'Mastering' } : { k:'up', t:'Ready to move up' };
+  if (g.pct != null && graded >= 3 && g.pct < 70) return help;
   if (s.post){
-    if (s.post.correct <= 8) return { k:'help', t:'Needs support' };
+    if (s.post.correct <= 8) return help;
     if (s.post.correct >= 13) return up();
-    return { k:'ok', t:'On track' };
+    return ok;
   }
   const enough = s.st.items >= 15;
   const acc = s.st.items ? s.st.right / s.st.items * 100 : null;
@@ -9065,44 +9398,39 @@ function snapStatus(s){
   if (s.st.items >= 20 && acc >= 90) return up();
   return { k:'ok', t:'On track' };
 }
+function studentSummary(name, since){
+  const st = playStatsFor(name, since);
+  // Placement: the latest attempt (it sets the tier). Final: the best attempt.
+  // Growth is measured from the FIRST placement, the true starting point.
+  const pre = latestTest(name, 'pre'), post = bestTest(name, 'post');
+  const preFirst = firstTest(name, 'pre');
+  const s = { name:name, st:st, pre:pre, post:post, preFirst:preFirst,
+              postLatest: latestTest(name, 'post'),
+              preN: testCount(name, 'pre'), postN: testCount(name, 'post'),
+              band: st.band || (pre ? pre.placedBand : 0),
+              acc: st.items ? Math.round(st.right / st.items * 100) : null,
+              growth: preFirst && post ? post.correct - preFirst.correct : null,
+              grade: gradebookFor(name, since) };
+  // weakest skill: lowest practice accuracy with enough attempts, else the placement check
+  let weak = null, wp = 2;
+  Object.keys(st.skills || {}).forEach(k => {
+    const m = st.skills[k];
+    if (SKILL_META[k] && m.a >= 3 && m.c / m.a < wp){ wp = m.c / m.a; weak = k; }
+  });
+  if (!weak && pre) Object.keys(pre.perSkill || {}).forEach(k => {
+    const m = pre.perSkill[k];
+    if (m.c / m.a < wp && m.c < m.a){ wp = m.c / m.a; weak = k; }
+  });
+  s.weak = weak; s.weakPct = weak ? Math.round(wp * 100) : null;
+  s.status = snapStatus(s);
+  return s;
+}
 function classRoster(){
   const since = snapSince();
   const names = {};
   (save.log || []).forEach(r => { if (r.student) names[String(r.student).toLowerCase()] = r.student; });
   (classData.tests || []).forEach(t => { if (t.student) names[String(t.student).toLowerCase()] = names[String(t.student).toLowerCase()] || t.student; });
-  Object.keys(classData.imports || {}).forEach(k => { names[k] = names[k] || classData.imports[k].n; });
-  return Object.keys(names).map(key => {
-    const name = names[key];
-    let st = playStatsFor(name, since);
-    let from = 'device';
-    const imp = (classData.imports || {})[key];
-    // a student's own device holds their full history, so an imported code
-    // wins whenever it carries more than this device saw
-    if (imp && imp.st && !since && (imp.st.items || 0) > st.items){ st = imp.st; from = 'code'; }
-    // Placement: the latest attempt (it sets the tier). Final: the best attempt.
-    // Growth is measured from the FIRST placement, the true starting point.
-    const pre = latestTest(name, 'pre'), post = bestTest(name, 'post');
-    const preFirst = firstTest(name, 'pre');
-    const s = { name:name, st:st, from:from, pre:pre, post:post, preFirst:preFirst,
-                postLatest: latestTest(name, 'post'),
-                preN: testCount(name, 'pre'), postN: testCount(name, 'post'),
-                band: st.band || (pre ? pre.placedBand : 0),
-                acc: st.items ? Math.round(st.right / st.items * 100) : null,
-                growth: preFirst && post ? post.correct - preFirst.correct : null };
-    // weakest skill: lowest practice accuracy with enough attempts, else the placement check
-    let weak = null, wp = 2;
-    Object.keys(st.skills || {}).forEach(k => {
-      const m = st.skills[k];
-      if (SKILL_META[k] && m.a >= 3 && m.c / m.a < wp){ wp = m.c / m.a; weak = k; }
-    });
-    if (!weak && pre) Object.keys(pre.perSkill || {}).forEach(k => {
-      const m = pre.perSkill[k];
-      if (m.c / m.a < wp && m.c < m.a){ wp = m.c / m.a; weak = k; }
-    });
-    s.weak = weak; s.weakPct = weak ? Math.round(wp * 100) : null;
-    s.status = snapStatus(s);
-    return s;
-  });
+  return Object.keys(names).map(key => studentSummary(names[key], since));
 }
 function fmtMins(secs){
   secs = Math.round(secs || 0);
@@ -9128,7 +9456,7 @@ function renderSnapshot(){
   const key = SNAP.sort, dir = SNAP.dir;
   const val = s => ({
     name: s.name.toLowerCase(), tier: s.band || 0, pre: s.pre ? s.pre.correct : -1, post: s.post ? s.post.correct : -1,
-    growth: s.growth == null ? -99 : s.growth, items: s.st.items, right: s.st.right, wrong: s.st.items - s.st.right,
+    growth: s.growth == null ? -99 : s.growth, grade: s.grade.pct == null ? -1 : s.grade.pct, items: s.st.items, right: s.st.right, wrong: s.st.items - s.st.right,
     acc: s.acc == null ? -1 : s.acc, cleared: s.st.cleared, time: s.st.secs, drills: s.st.drills, last: s.st.last,
     status: { help:0, ok:1, up:2, none:3 }[s.status.k]
   })[key];
@@ -9140,7 +9468,10 @@ function renderSnapshot(){
   const secs = roster.reduce((n, s) => n + s.st.secs, 0);
   const help = roster.filter(s => s.status.k === 'help').length;
 
+  const graded = roster.filter(s => s.grade.pct != null);
+  const avgGrade = graded.length ? Math.round(graded.reduce((n, s) => n + s.grade.pct, 0) / graded.length) : null;
   $('#snap-cards').innerHTML =
+    card('Class average grade', avgGrade == null ? '\u2014' : letterFor(avgGrade) + ' \u00b7 ' + avgGrade + '%', 'lime') +
     card('Students', roster.length, '') +
     card('Placement checks', withPre.length + ' / ' + roster.length, 'violet') +
     card('Avg placement score', withPre.length ? avg(withPre, s => s.pre.correct) + ' / 15' : '—', 'mag') +
@@ -9153,7 +9484,7 @@ function renderSnapshot(){
     card('Need support', help, help ? 'mag' : '');
 
   const cols = [
-    ['name', 'Student'], ['status', 'Status'], ['tier', 'Tier'], ['pre', 'Placement'], ['post', 'Final'], ['growth', 'Growth'],
+    ['name', 'Student'], ['grade', 'Grade'], ['status', 'Status'], ['tier', 'Tier'], ['pre', 'Placement'], ['post', 'Final'], ['growth', 'Growth'],
     ['items', 'Answered'], ['right', 'Correct'], ['wrong', 'Incorrect'], ['acc', 'Accuracy'], ['cleared', 'Missions'],
     ['time', 'Time'], ['drills', 'Drills'], ['last', 'Last played'], [null, 'Weakest skill']
   ];
@@ -9163,7 +9494,8 @@ function renderSnapshot(){
   const rows = roster.map(s => {
     const accCls = s.acc == null ? '' : s.acc >= 85 ? 'g' : s.acc >= 70 ? 'y' : 'r';
     return '<tr class="snaprow' + (SNAP.open === s.name ? ' open' : '') + '" data-stu="' + esc(s.name) + '">' +
-      '<td><button class="linkbtn" data-stu="' + esc(s.name) + '">' + esc(s.name) + '</button>' + (s.from === 'code' ? ' <span class="pill dr" title="From a pasted results code">code</span>' : '') + '</td>' +
+      '<td><button class="linkbtn" data-stu="' + esc(s.name) + '">' + esc(s.name) + '</button></td>' +
+      '<td>' + gradeBadge(s.grade) + (s.grade.trend ? ' <span class="trend ' + (s.grade.trend > 0 ? 'up' : 'dn') + '" title="Change since the previous assignment">' + (s.grade.trend > 0 ? '&#9650;' : '&#9660;') + Math.abs(s.grade.trend) + '</span>' : '') + '</td>' +
       '<td><span class="pill st-' + s.status.k + '">' + s.status.t + '</span></td>' +
       '<td>' + (s.band ? esc(tierShort(s.band)) : '—') + '</td>' +
       '<td class="num">' + (s.pre ? s.pre.correct + '/' + s.pre.total + (s.preN > 1 ? ' <span class="tries" title="' + s.preN + ' attempts; latest shown">&times;' + s.preN + '</span>' : '') : '—') + '</td>' +
@@ -9180,7 +9512,7 @@ function renderSnapshot(){
       '<td>' + (s.weak ? esc(SNAP_SHORT[s.weak] || s.weak) + ' <span style="color:var(--dimmer)">' + s.weakPct + '%</span>' : '—') + '</td></tr>';
   }).join('');
   $('#snap-table').innerHTML = '<thead>' + head + '</thead><tbody>' + (rows ||
-    '<tr><td colspan="15" style="color:var(--dim)">No students yet. Students appear here once they take the Placement Check or play a mission on this device &mdash; or paste their results codes below.</td></tr>') + '</tbody>';
+    '<tr><td colspan="16" style="color:var(--dim)">No students yet. Students appear here once they take the Placement Check or play a mission on this device.</td></tr>') + '</tbody>';
 
   // skill grid: who is struggling with what, in one picture
   $('#snap-grid').innerHTML = roster.length
@@ -9212,6 +9544,15 @@ function renderSnapshot(){
     if (SNAP.open) $('#snap-detail').scrollIntoView({ behavior:'smooth', block:'start' });
   });
   renderSnapDetail(roster.filter(s => s.name === SNAP.open)[0]);
+}
+function gradeExplain(gb){
+  if (gb.letter == null) return 'No graded work yet. Finished missions and Final Check attempts count toward the grade.';
+  const parts = [];
+  if (gb.practice != null) parts.push('Practice average <b>' + gb.practice + '%</b> over ' + gb.pn + ' mission' + (gb.pn === 1 ? '' : 's'));
+  if (gb.final != null) parts.push('Final Check average <b>' + gb.final + '%</b> over ' + gb.fn + ' attempt' + (gb.fn === 1 ? '' : 's'));
+  return parts.join(' &middot; ') + (gb.practice != null && gb.final != null
+    ? '. Weighted ' + Math.round(GRADE_WEIGHTS.practice * 100) + '% practice / ' + Math.round(GRADE_WEIGHTS.final * 100) + '% Final Check.'
+    : '.') + ' Updates with every new assignment.';
 }
 function renderSnapDetail(s){
   const el = $('#snap-detail');
@@ -9246,10 +9587,12 @@ function renderSnapDetail(s){
     const txt = t ? (t.passive || t.text || t.context || t.title || (t.frame || '')) : id.split('|')[1];
     return '<div class="keyrow"><div class="q">' + esc(plain(txt || '')) + '</div><div class="why">Missed ' + st.missed[id] + '&times;' + (t ? ' &middot; ' + esc(MODE_LABEL[t.kind] || t.kind) : '') + '</div></div>';
   }).join('');
-  const steps = st.runs && s.from === 'device' ? nextSteps(s.name) : [];
+  const steps = st.runs ? nextSteps(s.name) : [];
   el.innerHTML =
     '<div class="rowsplit"><h2 style="margin:0">' + esc(s.name) + ' <span class="pill st-' + s.status.k + '">' + s.status.t + '</span></h2>' +
     '<button class="btn sm ghost" id="snap-close">&#10005; Close</button></div>' +
+    '<div class="gradebox">' + gradeBadge(s.grade, true) +
+      '<div class="tiny" style="color:var(--dim)">' + gradeExplain(s.grade) + '</div></div>' +
     '<div class="cards" style="margin-top:12px">' +
       testBlock(s.pre, 'Placement (latest)', s.preN, s.preFirst) + testBlock(s.post, 'Final (best)', s.postN, null) +
       card('Growth', s.growth == null ? '\u2014' : (s.growth > 0 ? '+' : '') + s.growth, 'lime') +
@@ -9260,13 +9603,14 @@ function renderSnapDetail(s){
       card('Word-order slips', (st.errs || {}).order || 0, '') + card('Ate passive scrap', (st.errs || {}).leftover || 0, '') +
       card('Current tier', s.band ? tierShort(s.band) : '—', 'violet') + card('Last played', fmtAgo(st.last), '') +
     '</div>' +
-    '<h3>Skills: placement &rarr; final, and in-game practice</h3>' +
+    '<h3>Gradebook</h3>' + gradebookTable(s.grade) +
+    '<h3 style="margin-top:14px">Skills: placement &rarr; final, and in-game practice</h3>' +
     '<div class="tbl-wrap"><table style="min-width:auto"><thead><tr><th>Skill</th><th>First placement</th><th>Best final</th><th>Practice</th></tr></thead><tbody>' + skillRows + '</tbody></table></div>' +
     (steps.length ? '<h3 style="margin-top:14px">Suggested next steps</h3><ul class="tiny" style="color:var(--dim);padding-left:18px">' + steps.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
     (wrongTests ? '<div style="margin-top:14px">' + wrongTests + '</div>' : '') +
     (missed ? '<h4 style="margin-top:14px">Most-missed practice items</h4>' + missed : '') +
     '<div class="ovbtns">' +
-      (st.runs && s.from === 'device' ? '<button class="btn sm" id="snap-report">&#128203; Print report card</button><button class="btn sm" id="snap-cert">&#127894; Certificate</button>' : '') +
+      (st.runs ? '<button class="btn sm" id="snap-report">&#128203; Print report card</button><button class="btn sm" id="snap-cert">&#127894; Certificate</button>' : '') +
       (s.pre ? '<button class="btn sm danger" id="snap-repre">Delete Placement Check results</button>' : '') +
       (s.post ? '<button class="btn sm danger" id="snap-repost">Delete Final Check results</button>' : '') +
     '</div>';
@@ -9290,7 +9634,7 @@ function snapshotCSV(){
     if (typeof v !== 'number' && /^[=+\-@\t\r]/.test(t)) t = "'" + t;
     return '"' + t.replace(/"/g, '""') + '"';
   };
-  const head = ['Student', 'Status', 'Current tier', 'Grade', 'Placement score (latest)', 'Placement %', 'Placed tier', 'Suggested speed', 'Placement date',
+  const head = ['Student', 'Letter grade', 'Grade %', 'Practice average %', 'Missions graded', 'Final Check average %', 'Final attempts graded', 'Status', 'Current tier', 'Grade', 'Placement score (latest)', 'Placement %', 'Placed tier', 'Suggested speed', 'Placement date',
     'Placement attempts', 'First placement score', 'Final score (best)', 'Final %', 'Final date', 'Final attempts', 'Latest final score', 'Growth (best final - first placement)', 'Questions answered', 'Correct', 'Incorrect', 'Accuracy %', 'Missions cleared',
     'Sessions', 'Minutes practicing', 'Skill drills', 'Word-order slips', 'Passive scrap eaten', 'Last played', 'Weakest skill']
     .concat(SNAP_SKILLS.map(k => SKILL_META[k].name + ' %'))
@@ -9299,7 +9643,9 @@ function snapshotCSV(){
     const st = s.st, pre = s.pre, post = s.post;
     const sk = k => { const m = (st.skills || {})[k]; return m && m.a ? Math.round(m.c / m.a * 100) : ''; };
     const ts = (t, k) => { const m = t && t.perSkill[k]; return m ? m.c + '/' + m.a : ''; };
-    return [s.name, s.status.t, s.band ? 'T' + tierNum(s.band) : '', s.band || '',
+    const gb = s.grade;
+    return [s.name, gb.letter || '', gb.pct == null ? '' : gb.pct, gb.practice == null ? '' : gb.practice, gb.pn,
+      gb.final == null ? '' : gb.final, gb.fn, s.status.t, s.band ? 'T' + tierNum(s.band) : '', s.band || '',
       pre ? pre.correct : '', pre ? pre.acc : '', pre ? 'T' + tierNum(pre.placedBand) : '', pre ? PACE[pre.pace].label : '', pre ? new Date(pre.ts).toLocaleDateString() : '',
       s.preN, s.preFirst ? s.preFirst.correct : '',
       post ? post.correct : '', post ? post.acc : '', post ? new Date(post.ts).toLocaleDateString() : '', s.postN, s.postLatest ? s.postLatest.correct : '',
@@ -9330,9 +9676,9 @@ function printSnapshot(){
     '<h1>Passive Snake — Class Snapshot</h1>' +
     '<div class="sub">Printed ' + new Date().toLocaleString() + ' · Active vs. Passive Voice · CCSS L.8.1.B, L.8.3.A</div>' +
     '<table style="border-collapse:collapse;width:100%;font-family:Georgia,serif"><thead><tr>' +
-    ['Student', 'Status', 'Tier', 'Placement', 'Final', 'Growth', 'Answered', 'Correct', 'Incorrect', 'Accuracy', 'Missions', 'Time', 'Weakest skill']
+    ['Student', 'Grade', 'Status', 'Tier', 'Placement', 'Final', 'Growth', 'Answered', 'Correct', 'Incorrect', 'Accuracy', 'Missions', 'Time', 'Weakest skill']
       .map(h => '<th ' + td + '>' + h + '</th>').join('') + '</tr></thead><tbody>' +
-    roster.map(s => '<tr>' + [esc(s.name), s.status.t, s.band ? 'T' + tierNum(s.band) : '—',
+    roster.map(s => '<tr>' + [esc(s.name), s.grade.letter ? s.grade.letter + ' (' + s.grade.pct + '%)' : '\u2014', s.status.t, s.band ? 'T' + tierNum(s.band) : '—',
       s.pre ? s.pre.correct + '/15' : '—', s.post ? s.post.correct + '/15' : '—',
       s.growth == null ? '—' : (s.growth > 0 ? '+' : '') + s.growth, s.st.items, s.st.right, s.st.items - s.st.right,
       s.acc == null ? '—' : s.acc + '%', s.st.cleared, fmtMins(s.st.secs), s.weak ? esc(SKILL_META[s.weak].name) : '—']
@@ -9625,14 +9971,6 @@ function boot(){
   $('#snap-csv').onclick = snapshotCSV;
   $('#snap-print').onclick = printSnapshot;
   $('#snap-range').onchange = e => { SNAP.range = e.target.value; renderSnapshot(); };
-  $('#snap-import-go').onclick = () => {
-    const r = importResults($('#snap-import').value);
-    $('#snap-import-msg').style.color = r.codes ? 'var(--lime)' : 'var(--red)';
-    $('#snap-import-msg').textContent = r.codes
-      ? 'Imported ' + r.codes + ' code' + (r.codes === 1 ? '' : 's') + ' for ' + r.students + ' student' + (r.students === 1 ? '' : 's') + '.' + (r.bad ? ' ' + r.bad + ' could not be read.' : '')
-      : 'No results codes found. Each one starts with PS1:';
-    if (r.codes){ $('#snap-import').value = ''; SFX.buy(); renderSnapshot(); } else SFX.deny();
-  };
   $('#btn-zombie').onclick = () => { SFX.unlock(); SFX.click(); if (!requireName()) return; startRun('practice', -1); };
   $('#btn-gauntlet').onclick = () => { SFX.unlock(); SFX.click(); if (!requireName()) return; startRun('gauntlet', -1); };
   $('#btn-daily').onclick = () => { SFX.unlock(); SFX.click(); if (!requireName()) return; startRun('daily', -1); };
@@ -9706,12 +10044,6 @@ function boot(){
     show('menu');
   };
   $('#cdx-close').onclick = () => { $('#codex-reader').hidden = true; SFX.click(); };
-
-  $('#gate-go').onclick = () => {
-    if (+$('#gate-a').value === gateAnswerValue){ gateUnlocked = true; SFX.buy(); renderTeacher(); }
-    else { $('#gate-msg').textContent = 'Not quite — try the new problem.'; newGate(); $('#gate-a').value = ''; SFX.deny(); }
-  };
-  $('#gate-a').addEventListener('keydown', e => { if (e.key === 'Enter') $('#gate-go').click(); });
 
   $('#custom-save').onclick = () => {
     const rows = parseCustom($('#custom-in').value);
@@ -9801,8 +10133,8 @@ function boot(){
   $('#t-reset').onclick = () => {
     if (confirm('Reset EVERYTHING — student log, progress, XP, BYTES, badges and upgrades?\n\nThis cannot be undone.')){
       save = JSON.parse(JSON.stringify(DEFAULT_SAVE));
-      classData.tests = []; classData.imports = {};
-      persist(); gateUnlocked = true; keyBand = save.band; TASK_INDEX = null;
+      classData.tests = [];
+      persist(); keyBand = save.band; TASK_INDEX = null;
       renderTeacher(); renderLevelGrid(); renderWallets(); renderRank(); renderBandRow(); renderPaceRow(); refreshMenuToggles(); renderCodexCounts(); applyAccess(); renderMoveCard();
       sceneKey = '';
       $('#student-name').value = '';
